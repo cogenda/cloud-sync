@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
 
     # Amazon S3
-    settings = {"access_key_id":"AKIAIF4J6T7GDQS3L4DA", "secret_access_key":"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", "bucket_name":"cogenda"}
+    settings = {"access_key_id":"********", "secret_access_key":"***********", "bucket_name":"cogenda"}
     try:
         s3 = TransporterS3(settings,callback,error_callback,'test')
     except ConnectionError, e:
