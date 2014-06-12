@@ -1,3 +1,5 @@
 # Cloud sync dependency libs
 #pyinotify>=0.9.4
 boto>=2.29.1
+django>=1.6.5
+django-storages>=1.1
