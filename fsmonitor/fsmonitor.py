@@ -9,7 +9,7 @@ import threading
 import Queue
 import os
 import logging
-from scanner.pathscanner import PathScanner
+from scanner.path_scanner import PathScanner
 
 
 # Define exceptions.
@@ -165,25 +165,6 @@ def __get_class_reference(modulename, classname):
 
 def get_fsmonitor():
     """get the FSMonitor for the current platform"""
-    system = platform.system()
-    if system == "Linux":
-        kernel = platform.release().split(".")
-        # Available in Linux kernel 2.6.13 and higher.
-        if int(kernel[0]) == 2 and int(kernel[1]) == 6 and kernel[2][:2] >= 13:
-            return __get_class_reference("fsmonitor_inotify", "FSMonitorInotify")
-    elif system == "Windows":
-        # See:
-        # - http://timgolden.me.uk/python/win32_how_do_i/watch_directory_for_changes.html
-        # - http://code.activestate.com/recipes/156178/
-        # - http://stackoverflow.com/questions/339776/asynchronous-readdirectorychangesw
-        pass
-    elif system == "Darwin":
-        (release, version_info, machine) = platform.mac_ver()
-        major = release.split(".")[1]
-        # Available in Mac OS X 10.5 and higher.
-        if (major >= 5):
-            return __get_class_reference("fsmonitor_fsevents", "FSMonitorFSEvents")
-
     # Default to a polling mechanism
     return __get_class_reference("fsmonitor_polling", "FSMonitorPolling")
 
