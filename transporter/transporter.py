@@ -40,7 +40,6 @@ class Transporter(threading.Thread):
         if not callable(error_callback):
             raise InvalidCallbackError("error_callback function is not callable")
 
-        #self.settings       = settings
         self.storage        = None
         self.lock           = threading.Lock()
         self.queue          = Queue.Queue()
@@ -48,9 +47,6 @@ class Transporter(threading.Thread):
         self.error_callback = error_callback
         self.logger         = logging.getLogger(".".join([parent_logger, "Transporter"]))
         self.die            = False
-
-        # Validate settings.
-        #self.validate_settings()
 
         threading.Thread.__init__(self, name="TransporterThread")
 
