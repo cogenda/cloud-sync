@@ -5,9 +5,9 @@ import os
 import os.path
 
 if not 'DJANGO_SETTINGS_MODULE' in os.environ:
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'django_settings'
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_settings'
 
-from transporter_s3 import *
+from transporter.transporter_s3 import *
 
 if __name__ == "__main__":
     # Set up logger.
@@ -34,14 +34,13 @@ if __name__ == "__main__":
 
 
     # Amazon S3
-    settings = {"access_key_id":"********", "secret_access_key":"***********", "bucket_name":"cogenda"}
     try:
-        s3 = TransporterS3(settings,callback,error_callback,'test')
+        s3 = TransporterS3(callback, error_callback,'Test')
     except ConnectionError, e:
         print "Error occurred in TransporterS3:", e
     else:
         s3.start()
-        s3.sync_file("/Users/tim-tang/Desktop/arctic-wolf.jpg")
+        s3.sync_file('/home/jiltang/Koala.jpg')
         #s3.sync_file("subdir/bmi-chart.png", "subdir/bmi-chart.png", Transporter.DELETE)
         time.sleep(5)
         s3.stop() 

@@ -34,13 +34,13 @@ class Transporter(threading.Thread):
     }
 
 
-    def __init__(self, settings, callback, error_callback, parent_logger):
+    def __init__(self, callback, error_callback, parent_logger):
         if not callable(callback):
             raise InvalidCallbackError("callback function is not callable")
         if not callable(error_callback):
             raise InvalidCallbackError("error_callback function is not callable")
 
-        self.settings       = settings
+        #self.settings       = settings
         self.storage        = None
         self.lock           = threading.Lock()
         self.queue          = Queue.Queue()
@@ -50,7 +50,7 @@ class Transporter(threading.Thread):
         self.die            = False
 
         # Validate settings.
-        self.validate_settings()
+        #self.validate_settings()
 
         threading.Thread.__init__(self, name="TransporterThread")
 
@@ -94,6 +94,7 @@ class Transporter(threading.Thread):
                         self.callback(src, dst, url, action)
 
                 except Exception, e:
+                    self.logger.exception(e)
                     self.logger.error("The transporter '%s' has failed while transporting the file '%s' (action: %d). Error: '%s'." % (self.name, src, action, e))
 
                     # Call the error_callback function. Use the error_callback
@@ -117,20 +118,6 @@ class Transporter(threading.Thread):
         self.lock.release()
 
 
-    def validate_settings(self):
-        # Get some variables "as if it were magic", i.e., from subclasses of
-        # this class.
-        valid_settings      = self.valid_settings
-        required_settings   = self.required_settings
-        configured_settings = Set(self.settings.keys())
-
-        if len(configured_settings.difference(valid_settings)):
-            raise InvalidSettingError
-
-        if len(required_settings.difference(configured_settings)):
-            raise MissingSettingError
-
-
     def sync_file(self, src, dst=None, action=None, callback=None, error_callback=None):
         # Set the default value here because Python won't allow it sooner.
         if dst is None:
@@ -140,9 +127,12 @@ class Transporter(threading.Thread):
         elif action not in Transporter.ACTIONS.values():
             raise InvalidActionError
 
+        print src 
+
         # If dst is relative to the root, strip the leading slash.
         if dst.startswith("/"):
             dst = dst[1:]
+        print dst
 
         self.lock.acquire()
         self.queue.put((src, dst, action, callback, error_callback))
