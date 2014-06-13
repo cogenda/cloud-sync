@@ -40,7 +40,8 @@ if __name__ == "__main__":
         print "Error occurred in TransporterS3:", e
     else:
         s3.start()
-        s3.sync_file('/home/jiltang/Koala.jpg')
-        #s3.sync_file("subdir/bmi-chart.png", "subdir/bmi-chart.png", Transporter.DELETE)
+        s3.sync_file('/Users/tim-tang/Desktop/arctic-wolf.jpg')
+        s3.sync_file('/Users/tim-tang/Desktop/logo.jpg')
+        s3.sync_file("/Users/tim-tang/Desktop/arctic-wolf.jpg", "/Users/tim-tang/Desktop/logo.jpg", Transporter.DELETE)
         time.sleep(5)
         s3.stop() 
