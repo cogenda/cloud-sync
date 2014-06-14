@@ -195,21 +195,3 @@ FSMonitor.MERGE_EVENTS[FSMonitor.DELETED] = {}
 FSMonitor.MERGE_EVENTS[FSMonitor.DELETED][FSMonitor.CREATED]   = FSMonitor.MODIFIED
 FSMonitor.MERGE_EVENTS[FSMonitor.DELETED][FSMonitor.MODIFIED]  = FSMonitor.MODIFIED #!
 FSMonitor.MERGE_EVENTS[FSMonitor.DELETED][FSMonitor.DELETED]   = FSMonitor.DELETED  #!
-
-
-if __name__ == "__main__":
-    import time
-
-    def callbackfunc(monitored_path, event_path, event):
-        print "CALLBACK FIRED, params: monitored_path=%s', event_path='%s', event='%d'" % (monitored_path, event_path, event)
-
-    fsmonitor_class = get_fsmonitor()
-    print "Using class", fsmonitor_class
-    fsmonitor = fsmonitor_class(callbackfunc, True)
-    fsmonitor.start()
-    fsmonitor.add_dir("/Users/wimleers/Downloads", FSMonitor.CREATED | FSMonitor.MODIFIED | FSMonitor.DELETED)
-    time.sleep(30)
-    fsmonitor.stop()
-
-
-
