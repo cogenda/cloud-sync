@@ -98,10 +98,9 @@ class CloudSync(threading.Thread):
         # Create one initial transporter per pool, possible other transporters
         # will be created on-demand.
         self.transporters = {} 
-
-        # Collecting all necessary metadata for each rule.
-        #TODO: rules
-        self.rules = [] 
+        for server in TRANSPORTERS:
+            self.transporters[server] = []
+            self.logger.info("Setup: created transporter pool for the '%s' server." % (server))
 
         # Initialize the the persistent 'pipeline' queue.
         self.pipeline_queue = PersistentQueue("pipeline_queue", PERSISTENT_DATA_DB)
@@ -198,27 +197,31 @@ class CloudSync(threading.Thread):
 
             # Discover queue -> pipeline queue.
             (input_file, event) = self.discover_queue.get()
-            item = self.pipeline_queue.get_item_for_key(key=input_file)
+            #item = self.pipeline_queue.get_item_for_key(key=input_file)
             # If the file does not yet exist in the pipeline queue, put() it.
-            if item is None:
-                self.pipeline_queue.put(item=(input_file, event), key=input_file)
+            #print item
+            #if item is None:
+                # Add to transport queue.
+            for server in TRANSPORTERS:
+                self.transport_queue[server].put((input_file, event, server, input_file))
             # Otherwise, merge the events, to prevent unnecessary actions.
-            else:
-                old_event = item[1]
-                merged_event = FSMonitor.MERGE_EVENTS[old_event][event]
-                if merged_event is not None:
-                    self.pipeline_queue.update(item=(input_file, merged_event), key=input_file)
-                    self.logger.info("Pipeline queue: merged events for '%s': %s + %s = %s." % (input_file, FSMonitor.EVENTNAMES[old_event], FSMonitor.EVENTNAMES[event], FSMonitor.EVENTNAMES[merged_event]))
-                    # The events being merged cancel each other out, thus remove
-                    # the file from the pipeline queue.
-                else:
-                    self.pipeline_queue.remove_item_for_key(key=input_file)
-                    self.logger.info("Pipeline queue: merged events for '%s': %s + %s cancel each other out, thus removed this file." % (input_file, FSMonitor.EVENTNAMES[old_event], FSMonitor.EVENTNAMES[event]))
+            # else:
+            #     old_event = item[1]
+            #     merged_event = FSMonitor.MERGE_EVENTS[old_event][event]
+            #     if merged_event is not None:
+            #         self.pipeline_queue.update(item=(input_file, merged_event), key=input_file)
+            #         self.logger.info("Pipeline queue: merged events for '%s': %s + %s = %s." % (input_file, FSMonitor.EVENTNAMES[old_event], FSMonitor.EVENTNAMES[event], FSMonitor.EVENTNAMES[merged_event]))
+            #         # The events being merged cancel each other out, thus remove
+            #         # the file from the pipeline queue.
+            #     else:
+            #         self.pipeline_queue.remove_item_for_key(key=input_file)
+            #         self.logger.info("Pipeline queue: merged events for '%s': %s + %s cancel each other out, thus removed this file." % (input_file, FSMonitor.EVENTNAMES[old_event], FSMonitor.EVENTNAMES[event]))
             self.logger.info("Discover queue -> pipeline queue: '%s'." % (input_file))
         self.lock.release()
 
 
     def __process_transport_queues(self):
+
         for server in TRANSPORTERS:
             processed = 0 
 
@@ -227,7 +230,6 @@ class CloudSync(threading.Thread):
                 # item from the queue, because there may be no transporter
                 # available, in which case the file should remain queued.
                 self.lock.acquire()
-                #TODO: without rule.
                 (input_file, event, processed_for_server, output_file) = self.transport_queue[server].peek()
                 self.lock.release()
 
@@ -236,9 +238,9 @@ class CloudSync(threading.Thread):
                     action = Transporter.DELETE
                 elif event == FSMonitor.CREATED or event == FSMonitor.MODIFIED:
                     action = Transporter.ADD_MODIFY
-                elif event == Arbitrator.DELETE_OLD_FILE:
+                elif event == CloudSync.DELETE_OLD_FILE:
                     # TRICKY: if the event is neither of DELETED, CREATED, nor
-                    # MODIFIED, which everywhere else in the arbitrator it
+                    # MODIFIED, which everywhere else in the cloud sync it
                     # should be, then it must be the special case of a file
                     # that has been modified and already transported, but the
                     # old file must still be deleted. Hence we map this event
@@ -276,6 +278,8 @@ class CloudSync(threading.Thread):
                     src = output_file
                     relative_paths = SCAN_PATHS
                     dst = self.__calculate_transporter_dst(output_file, dst_parent_path, relative_paths)
+                    print src
+                    print dst
 
                     # Start the transport.
                     transporter.sync_file(src, dst, action, curried_callback, curried_error_callback)
@@ -317,40 +321,8 @@ class CloudSync(threading.Thread):
                     self.dbcur.execute("UPDATE synced_files SET transported_file_basename=?, url=? WHERE input_file=? AND server=?", (transported_file_basename, url, input_file, server))
                     self.dbcon.commit()
 
-    def _import_transporter(self, transporter):
-        """Imports transporter module and class, returns class.
 
-        Input value can be:
 
-        * a full/absolute module path, like
-          "MyTransporterPackage.SomeTransporterClass"
-        """
-        transporter_class = None
-        module = None
-        alternatives = [transporter]
-        default_prefix = 'transporter.transporter_'
-        if not transporter.startswith(default_prefix):
-            alternatives.append('%s%s' % (default_prefix, transporter))
-        for module_name in alternatives:
-            try:
-                print module_name
-                module = __import__(module_name, globals(), locals(), ["TRANSPORTER_CLASS"], -1)
-            except ImportError:
-                pass
-        print module
-        if not module:
-            msg = "The transporter module '%s' could not be found." % transporter
-            if len(alternatives) > 1:
-                msg = '%s Tried (%s)' % (msg, ', '.join(alternatives))
-            self.logger.error(msg)
-        else:
-            try:
-                classname = module.TRANSPORTER_CLASS
-                module = __import__(module_name, globals(), locals(), [classname])
-                transporter_class = getattr(module, classname)
-            except AttributeError:
-                self.logger.error("The Transporter module '%s' was found, but its Transporter class '%s' could not be found."  % (module_name, classname))
-        return transporter_class
 
     def __get_transporter(self, server):
         """get a transporter; if one is ready for new work, use that one,
@@ -372,7 +344,7 @@ class CloudSync(threading.Thread):
         # Don't run more transporters for each server than its "maxConnections"
         # setting allows.
         num_connections = len(self.transporters[server])
-        max_connections = self.config.servers[server]["maxConnections"]
+        max_connections = 5 
         if max_connections == 0 or num_connections < max_connections:
             transporter    = self.__create_transporter(server)
             id             = len(self.transporters[server]) - 1
@@ -385,8 +357,57 @@ class CloudSync(threading.Thread):
                 # first in line.
                 place_in_queue = 1
                 return (id, 1, transporter)
-
         return (None, None, None)
+
+    def __create_transporter(self, server):
+        """create a transporter for the given server"""
+
+        transporter_name = server
+        transporter_class = self._import_transporter(transporter_name)
+
+        # Attempt to create an instance of the transporter.
+        try:
+            transporter = transporter_class(self.transporter_callback, self.transporter_error_callback, "CloudSync")
+        except ConnectionError, e:
+            self.logger.error("Could not start transporter '%s'. Error: '%s'." % (transporter_name, e))
+            return False
+        else:
+            self.logger.warning("Created '%s' transporter for the '%s' server." % (transporter_name, server))
+
+        return transporter
+
+    def _import_transporter(self, transporter):
+        """Imports transporter module and class, returns class.
+
+        Input value can be:
+
+        * a full/absolute module path, like
+          "MyTransporterPackage.SomeTransporterClass"
+        """
+        transporter_class = None
+        module = None
+        alternatives = [transporter]
+        default_prefix = 'transporter.transporter_'
+        if not transporter.startswith(default_prefix):
+            alternatives.append('%s%s' % (default_prefix, transporter))
+        for module_name in alternatives:
+            try:
+                module = __import__(module_name, globals(), locals(), ["TRANSPORTER_CLASS"], -1)
+            except ImportError:
+                pass
+        if not module:
+            msg = "The transporter module '%s' could not be found." % transporter
+            if len(alternatives) > 1:
+                msg = '%s Tried (%s)' % (msg, ', '.join(alternatives))
+            self.logger.error(msg)
+        else:
+            try:
+                classname = module.TRANSPORTER_CLASS
+                module = __import__(module_name, globals(), locals(), [classname])
+                transporter_class = getattr(module, classname)
+            except AttributeError:
+                self.logger.error("The Transporter module '%s' was found, but its Transporter class '%s' could not be found."  % (module_name, classname))
+        return transporter_class
 
 
     def fsmonitor_callback(self, monitored_path, event_path, event, discovered_through):
@@ -453,7 +474,8 @@ class CloudSync(threading.Thread):
                     (curried): input_file='%s'
                     (curried): event=%d""" % (input_file, event)
 
-        self.retry_queue.put((input_file, event))
+        #TODO:           
+        #self.retry_queue.put((input_file, event))
 
     def __calculate_transporter_dst(self, src, parent_path=None, relative_paths=[]):
         dst = src
