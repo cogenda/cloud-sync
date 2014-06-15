@@ -2,13 +2,13 @@
 #coding=utf8
 import time
 try:
-    from oss.oss_api import *
+    from aliyun_oss.oss.oss_api import *
 except:
-    from oss_api import *
+    from aliyun_oss.oss.oss_api import *
 try:
-    from oss.oss_xml_handler import *
+    from aliyun_oss.oss.oss_xml_handler import *
 except:
-    from oss_xml_handler import *
+    from aliyun_oss.oss.oss_xml_handler import *
 HOST = "oss.aliyuncs.com"
 ACCESS_ID = ""
 SECRET_ACCESS_KEY = ""

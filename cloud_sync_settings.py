@@ -7,6 +7,7 @@ SECRET_KEY='cogenda-cloud-sync'
 MEDIA_URL=''
 MEDIA_ROOT=''
 
+
 ########################################################
 #               AWS S3 CONFIGURATION                   #           
 ########################################################
@@ -18,12 +19,21 @@ AWS_HEADERS = {
         'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT', 
         'Cache-Control': 'max-age=86400',
         'Vary':'Accept-Encoding',
-}
+        }
+
 
 ########################################################
 #               AliYun OSS CONFIGURATION               #           
 ########################################################
-#TODO:
+OSS_ACCESS_URL='oss.aliyuncs.com'
+OSS_ACCESS_KEY_ID=os.environ.get('OSS_ACCESS_KEY_ID', None)
+OSS_SECRET_ACCESS_KEY=os.environ.get('OSS_SECRET_ACCESS_KEY', None)
+OSS_STORAGE_BUCKET_NAME = 'cogenda'
+OSS_HEADERS = {
+        'Cache-Control': 'max-age=31536000', 
+        }
+OSS_DEFAULT_ACL = 'public-read'
+
 
 ########################################################
 #               CLOUD SYNC CONFIGURATION               #           
@@ -42,10 +52,13 @@ MAX_TRANSPORTER_QUEUE_SIZE = 1
 MAX_TRANSPORTER_POOL_SIZE = 5
 QUEUE_PROCESS_BATCH_SIZE = 20
 CALLBACKS_CONSOLE_OUTPUT = True
- 
+
+
 ########################################################
 #                 USER SETTINGS                        #           
 ########################################################
-SCAN_PATHS={unicode('/Users/tim-tang/Work/test','utf-8'): 'static'}
+SCAN_PATHS={
+        unicode('/Users/tim-tang/Work/test','utf-8'): 'static',
+        }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3']

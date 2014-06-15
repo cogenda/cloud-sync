@@ -13,7 +13,6 @@ class TransporterS3(Transporter):
 
     def __init__(self, callback, error_callback, parent_logger=None):
         Transporter.__init__(self, callback, error_callback, parent_logger)
-        # Map the settings to the format expected by S3Storage.
         try:
             self.storage = S3BotoStorage()
         except Exception, e:            
