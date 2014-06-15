@@ -20,7 +20,14 @@ AWS_HEADERS = {
         'Vary':'Accept-Encoding',
 }
 
-# Settings for cloud sync
+########################################################
+#               AliYun OSS CONFIGURATION               #           
+########################################################
+#TODO:
+
+########################################################
+#               CLOUD SYNC CONFIGURATION               #           
+########################################################
 RESTART_AFTER_UNHANDLED_EXCEPTION = False
 RESTART_INTERVAL = 10
 LOG_FILE = './cloud_sync.log'
@@ -35,7 +42,10 @@ MAX_TRANSPORTER_QUEUE_SIZE = 1
 MAX_TRANSPORTER_POOL_SIZE = 5
 QUEUE_PROCESS_BATCH_SIZE = 20
 CALLBACKS_CONSOLE_OUTPUT = True
-
+ 
+########################################################
+#                 USER SETTINGS                        #           
+########################################################
 SCAN_PATHS={unicode('/Users/tim-tang/Work/test','utf-8'): 'static'}
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3']
