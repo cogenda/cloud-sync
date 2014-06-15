@@ -27,10 +27,11 @@ LOG_FILE = './cloud_sync.log'
 PID_FILE = '~/.cloud_sync.pid'
 PERSISTENT_DATA_DB = './persistent_data.db'
 SYNCED_FILES_DB = './synced_files.db'
-WORKING_DIR = '/tmp/cloud_sync.pid'
 CONSOLE_LOGGER_LEVEL = logging.INFO
 FILE_LOGGER_LEVEL = logging.INFO
+MAX_SIMULTANEOUS_TRANSPORTERS = 10
+MAX_TRANSPORTER_QUEUE_SIZE = 1
+QUEUE_PROCESS_BATCH_SIZE = 20
 
-SCAN_PATHS={'/Users/tim-tang/Work/test' : 'static'}
-IGNORE_DIRS=[]
+SCAN_PATHS=['/Users/tim-tang/Work/test']
 TRANSPORTERS=['S3']
