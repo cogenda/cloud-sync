@@ -102,10 +102,6 @@ class CloudSync(threading.Thread):
             self.transporters[server] = []
             self.logger.info("Setup: created transporter pool for the '%s' server." % (server))
 
-        # Initialize the the persistent 'pipeline' queue.
-        self.pipeline_queue = PersistentQueue("pipeline_queue", PERSISTENT_DATA_DB)
-        self.logger.warning("Setup: initialized 'pipeline' persistent queue, contains %d items." % (self.pipeline_queue.qsize()))
-
         self.transport_queue = {}
         for server in TRANSPORTERS:
             self.transport_queue[server] = AdvancedQueue()
@@ -126,12 +122,12 @@ class CloudSync(threading.Thread):
 
         # Initialize the FSMonitor.
         fsmonitor_class = get_fsmonitor()
-        self.fsmonitor = fsmonitor_class(self.fsmonitor_callback, True, True, IGNORE_PATHS, "fsmonitor.db", "CloudSync")
+        self.fsmonitor = fsmonitor_class(self.fsmonitor_callback, True, True, IGNORE_PATHS, FSMONITOR_DB, "CloudSync")
         self.logger.warning("Setup: initialized FSMonitor.")
 
 
         # Monitor all sources' scan paths.
-        for source in SCAN_PATHS: 
+        for source in SCAN_PATHS.keys(): 
             self.logger.info("Setup: monitoring '%s'" % (source))
             self.fsmonitor.add_dir(source, FSMonitor.CREATED | FSMonitor.MODIFIED | FSMonitor.DELETED)
 
@@ -194,28 +190,10 @@ class CloudSync(threading.Thread):
 
         self.lock.acquire()
         while self.discover_queue.qsize() > 0:
-
             # Discover queue -> pipeline queue.
             (input_file, event) = self.discover_queue.get()
-            #item = self.pipeline_queue.get_item_for_key(key=input_file)
-            # If the file does not yet exist in the pipeline queue, put() it.
-            #print item
-            #if item is None:
-                # Add to transport queue.
             for server in TRANSPORTERS:
                 self.transport_queue[server].put((input_file, event, server, input_file))
-            # Otherwise, merge the events, to prevent unnecessary actions.
-            # else:
-            #     old_event = item[1]
-            #     merged_event = FSMonitor.MERGE_EVENTS[old_event][event]
-            #     if merged_event is not None:
-            #         self.pipeline_queue.update(item=(input_file, merged_event), key=input_file)
-            #         self.logger.info("Pipeline queue: merged events for '%s': %s + %s = %s." % (input_file, FSMonitor.EVENTNAMES[old_event], FSMonitor.EVENTNAMES[event], FSMonitor.EVENTNAMES[merged_event]))
-            #         # The events being merged cancel each other out, thus remove
-            #         # the file from the pipeline queue.
-            #     else:
-            #         self.pipeline_queue.remove_item_for_key(key=input_file)
-            #         self.logger.info("Pipeline queue: merged events for '%s': %s + %s cancel each other out, thus removed this file." % (input_file, FSMonitor.EVENTNAMES[old_event], FSMonitor.EVENTNAMES[event]))
             self.logger.info("Discover queue -> pipeline queue: '%s'." % (input_file))
         self.lock.release()
 
@@ -249,8 +227,6 @@ class CloudSync(threading.Thread):
                 else:
                     raise Exception("Non-existing event set.") 
 
-                # Make additional settings.
-                dst_parent_path = ""
 
                 (id, place_in_queue, transporter) = self.__get_transporter(server)
                 if not transporter is None:
@@ -276,10 +252,8 @@ class CloudSync(threading.Thread):
                             )
 
                     src = output_file
-                    relative_paths = SCAN_PATHS
-                    dst = self.__calculate_transporter_dst(output_file, dst_parent_path, relative_paths)
-                    print src
-                    print dst
+                    relative_paths = SCAN_PATHS.keys()
+                    dst = self.__calculate_transporter_dst(output_file, relative_paths)
 
                     # Start the transport.
                     transporter.sync_file(src, dst, action, curried_callback, curried_error_callback)
@@ -344,7 +318,7 @@ class CloudSync(threading.Thread):
         # Don't run more transporters for each server than its "maxConnections"
         # setting allows.
         num_connections = len(self.transporters[server])
-        max_connections = 5 
+        max_connections = MAX_TRANSPORTER_POOL_SIZE
         if max_connections == 0 or num_connections < max_connections:
             transporter    = self.__create_transporter(server)
             id             = len(self.transporters[server]) - 1
@@ -477,12 +451,15 @@ class CloudSync(threading.Thread):
         #TODO:           
         #self.retry_queue.put((input_file, event))
 
-    def __calculate_transporter_dst(self, src, parent_path=None, relative_paths=[]):
+
+    def __calculate_transporter_dst(self, src, relative_paths=[]):
         dst = src
+        parent_path=None
 
         # Strip off any relative paths.
         for relative_path in relative_paths:
             if dst.startswith(relative_path):
+                parent_path = SCAN_PATHS[relative_path]
                 dst = dst[len(relative_path):]
 
         # Ensure no absolute path is returned, which would make os.path.join()

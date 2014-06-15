@@ -20,20 +20,22 @@ AWS_HEADERS = {
         'Vary':'Accept-Encoding',
 }
 
-# settings for cloud sync
+# Settings for cloud sync
 RESTART_AFTER_UNHANDLED_EXCEPTION = False
 RESTART_INTERVAL = 10
 LOG_FILE = './cloud_sync.log'
 PID_FILE = '/tmp/cloud_sync.pid'
-PERSISTENT_DATA_DB = './persistent_data.db'
-SYNCED_FILES_DB = './synced_files.db'
+PERSISTENT_DATA_DB = './cloud_sync.db'
+SYNCED_FILES_DB = './cloud_sync.db'
+FSMONITOR_DB = './cloud_sync.db'
 CONSOLE_LOGGER_LEVEL = logging.INFO
 FILE_LOGGER_LEVEL = logging.INFO
 MAX_SIMULTANEOUS_TRANSPORTERS = 10
 MAX_TRANSPORTER_QUEUE_SIZE = 1
+MAX_TRANSPORTER_POOL_SIZE = 5
 QUEUE_PROCESS_BATCH_SIZE = 20
 CALLBACKS_CONSOLE_OUTPUT = True
 
-SCAN_PATHS=[unicode('/Users/tim-tang/Work/test','utf-8')]
+SCAN_PATHS={unicode('/Users/tim-tang/Work/test','utf-8'): 'static'}
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3']
