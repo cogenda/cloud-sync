@@ -15,13 +15,15 @@ AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', None)
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
 AWS_STORAGE_BUCKET_NAME = 'cogenda'
 AWS_QUERYSTRING_AUTH = False
-#The minimum part size(byte) (if there is more than one part) 
+#The minimum part size(byte) (if there is more than one part).
+#This value must be >= 5M
 AWS_S3_FILE_BUFFER_SIZE=5*1024*1024
 AWS_HEADERS = {
         'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT', 
         'Cache-Control': 'max-age=86400',
         'Vary':'Accept-Encoding',
         }
+AWS_DEFAULT_ACL='public-read'
 
 
 ########################################################
@@ -35,6 +37,9 @@ OSS_HEADERS = {
         'Cache-Control': 'max-age=31536000', 
         }
 OSS_DEFAULT_ACL = 'public-read'
+#The minimum part size(byte) (if there is more than one part).
+#This value must be >= 5M
+OSS_FILE_BUFFER_SIZE=5*1024*1024
 
 
 ########################################################

@@ -129,7 +129,8 @@ class OSSStorage(Storage):
 
     def url(self, name):
         name = self._clean_name(name)
-        return '%s%s' % (settings.MEDIA_URL, name)
+        return 'http://%s.%s/%s' % (self.bucket, ACCESS_ADDRESS, name)
+        #return '%s%s' % (settings.MEDIA_URL, name)
 
     def modified_time(self, name):
         try:

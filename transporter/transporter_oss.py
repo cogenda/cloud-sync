@@ -18,8 +18,3 @@ class TransporterOSS(Transporter):
         except Exception, e:            
             raise ConnectionError(e)
 
-
-    def alter_url(self, url):
-        """Alter the generated URL"""
-        url = 'http://%s.%s/%s' %(OSS_STORAGE_BUCKET_NAME, ACCESS_ADDRESS, url)
-        return url
