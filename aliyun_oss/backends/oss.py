@@ -76,7 +76,7 @@ class OSSStorage(Storage):
         })
         fp = StringIO(content)
         response = self.connection.put_object_from_fp(self.bucket, name, fp, content_type, self.headers)
-        if (res.status / 100) != 2:
+        if (response.status / 100) != 2:
             raise IOError("OSSStorageError: %s" % response.read())
 
     def _open(self, name, mode='rb'):
@@ -91,7 +91,7 @@ class OSSStorage(Storage):
         else:
             headers = {'Range': 'bytes=%s-%s' % (start_range, end_range)}
         response = self.connection.get_object(self.bucket, name, headers)
-        if (res.status / 100) != 2:
+        if (response.status / 100) != 2:
             raise IOError("OSSStorageError: %s" % response.read())
 
         header_map = convert_header2map(response.getheaders())

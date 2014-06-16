@@ -42,6 +42,6 @@ if __name__ == "__main__":
         s3.start()
         s3.sync_file('/Users/tim-tang/Desktop/arctic-wolf.jpg')
         s3.sync_file('/Users/tim-tang/Desktop/logo.jpg')
-        s3.sync_file("/Users/tim-tang/Desktop/arctic-wolf.jpg", "/Users/tim-tang/Desktop/logo.jpg", Transporter.DELETE)
+        s3.sync_file("/Users/tim-tang/Desktop/arctic-wolf.jpg", "/Users/tim-tang/Desktop/arctic-wolf.jpg", Transporter.DELETE)
         time.sleep(5)
         s3.stop() 

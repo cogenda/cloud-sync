@@ -123,12 +123,9 @@ class Transporter(threading.Thread):
         elif action not in Transporter.ACTIONS.values():
             raise InvalidActionError
 
-        print src 
-
         # If dst is relative to the root, strip the leading slash.
         if dst.startswith("/"):
             dst = dst[1:]
-        print dst
 
         self.lock.acquire()
         self.queue.put((src, dst, action, callback, error_callback))

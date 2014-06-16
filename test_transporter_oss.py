@@ -7,7 +7,7 @@ import os.path
 if not 'DJANGO_SETTINGS_MODULE' in os.environ:
     os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_settings'
 
-from transporter.transporter_s3 import *
+from transporter.transporter_oss import *
 
 if __name__ == "__main__":
     # Set up logger.
@@ -40,9 +40,8 @@ if __name__ == "__main__":
         print "Error occurred in TransporterS3:", e
     else:
         oss.start()
-        oss.sync_file('/Users/tim-tang/Desktop/arctic-wolf.jpg')
-        oss.sync_file('/Users/tim-tang/Desktop/logo.jpg')
-        oss.sync_file("/Users/tim-tang/Desktop/arctic-wolf.jpg", "/Users/tim-tang/Desktop/logo.jpg", Transporter.DELETE)
+        oss.sync_file('/home/jiltang/Koala.jpg')
+        oss.sync_file('/home/jiltang/Koala.jpg', '/home/jiltang/Koala.jpg', Transporter.DELETE)
         time.sleep(5)
         oss.stop() 
 

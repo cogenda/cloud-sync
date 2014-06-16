@@ -5,7 +5,7 @@
 from transporter import *
 from aliyun_oss.backends.oss import OSSStorage
 
-class TransportOSS(Transporter):
+class TransporterOSS(Transporter):
 
     name='OSS'
 
