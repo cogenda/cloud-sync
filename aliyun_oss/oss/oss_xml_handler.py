@@ -132,6 +132,50 @@ class GetObjectGroupIndexXml:
         for p in self.index_list:
             p.show()
 
+class GetObjectLinkIndexXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.index_list = []
+        index_lists = self.xml.getElementsByTagName('Part')
+        for i in index_lists:
+            self.index_list.append(Part(i))
+
+    def list(self):
+        index_list = []
+        for i in self.index_list:
+            index_list.append((i.part_num, i.object_name))
+        return index_list
+
+    def show(self):
+        print "\nPart list:"
+        for p in self.index_list:
+            p.show()
+
+class GetObjectLinkInfoXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.bucket = get_tag_text(self.xml, 'Bucket')
+        self.type = get_tag_text(self.xml, 'Type')
+        self.key = get_tag_text(self.xml, 'Key')
+        self.etag = get_tag_text(self.xml, 'ETag')
+        self.last_modified = get_tag_text(self.xml, 'LastModified')
+        self.index_list = []
+        index_lists = self.xml.getElementsByTagName('Part')
+        for i in index_lists:
+            self.index_list.append(Part(i))
+
+    def list(self):
+        index_list = []
+        for i in self.index_list:
+            index_list.append((i.part_num, i.object_name, i.object_size, i.etag))
+        return index_list
+
+    def show(self):
+        print "Bucket: %s\nType: %s\nObject: %s\nEtag: %s\nLastModified: %s" % (self.bucket, self.type, self.key, self.etag, self.last_modified)
+        print "\nPart list:"
+        for p in self.index_list:
+            p.show()
+
 class GetBucketXml:
     def __init__(self, xml_string):
         self.xml = minidom.parseString(xml_string)
@@ -211,6 +255,7 @@ class Upload:
         self.element = xml_element
         self.key = get_tag_text(self.element, "Key")        
         self.upload_id = get_tag_text(self.element, "UploadId")
+        self.init_time = get_tag_text(self.element, "Initiated")
 
 class GetMultipartUploadsXml:
     def __init__(self, xml_string):
@@ -240,7 +285,7 @@ class GetMultipartUploadsXml:
         cl = []
         pl = []
         for c in self.content_list:
-            cl.append((c.key, c.upload_id))
+            cl.append((c.key, c.upload_id, c.init_time))
         for p in self.prefix_list:
             pl.append(p)
 
@@ -326,6 +371,79 @@ class RedirectXml:
         self.endpoint = get_tag_text(self.xml, 'Endpoint')
     def Endpoint(self):
         return self.endpoint
+
+class PostObjectResponseXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.bucket = get_tag_text(self.xml, 'Bucket')
+        self.key = get_tag_text(self.xml, 'Key')
+        self.object= get_tag_text(self.xml, 'Key')
+        self.etag = get_tag_text(self.xml, 'ETag')
+        self.location = get_tag_text(self.xml, 'Location')
+
+    def show(self):
+        print "Bucket: %s\nObject: %s\nEtag: %s\nLocation: %s" % (self.bucket, self.key, self.etag, self.location)
+
+class WebsiteXml:
+    def __init__(self, xml_element):
+        self.element = minidom.parseString(xml_element) 
+        self.index_file = get_tag_text(self.element, 'Suffix')
+        self.error_file = get_tag_text(self.element, 'Key')
+
+class Rule:
+    def __init__(self, xml_element):
+        self.max_age = ""
+        self.max_age = get_tag_text(xml_element, 'MaxAgeSeconds')
+        def get_list_by_tag(xml_element, tag):
+            list = []
+            nodes = xml_element.getElementsByTagName(tag)
+            for node in nodes:
+                for tmp_node in node.childNodes:
+                    if tmp_node.nodeType in (tmp_node.TEXT_NODE, tmp_node.CDATA_SECTION_NODE):
+                        list.append(tmp_node.data)
+            return list
+        self.method_list = get_list_by_tag(xml_element, 'AllowedMethod')
+        self.origin_list = get_list_by_tag(xml_element, 'AllowedOrigin') 
+        self.header_list = get_list_by_tag(xml_element, 'AllowedHeader')
+        self.expose_header_list = get_list_by_tag(xml_element, 'ExposeHeader') 
+
+    def show(self):
+        print "max_age:%s" % self.max_age
+        print "method_list:"
+        for i in self.method_list:
+            print "%s" % i
+        print "origin_list:"
+        for i in self.origin_list:
+            print "%s" % i
+        print "header_list:"
+        for i in self.header_list:
+            print "%s" % i
+        print "expose_header_list:"
+        for i in self.expose_header_list:
+            print "%s" % i
+    def get_msg(self):
+        msg = "max_age:%s" % self.max_age
+        msg += "method_list:"
+        for i in sorted(self.method_list):
+            msg += "%s" % i
+        msg += "origin_list:"
+        for i in sorted(self.origin_list):
+            msg += "%s" % i
+        msg += "header_list:"
+        for i in sorted(self.header_list):
+            msg += "%s" % i
+        msg += "expose_header_list:"
+        for i in sorted(self.expose_header_list):
+            msg += "%s" % i
+        return msg
+
+class CorsXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        rules = self.xml.getElementsByTagName('CORSRule')
+        self.rule_list = []
+        for rule in rules:
+            self.rule_list.append(Rule(rule))
 
 if __name__ == "__main__":
     pass

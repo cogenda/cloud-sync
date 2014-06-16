@@ -22,6 +22,10 @@ Auto upload tool for AWS S3 & AliYun OSS.
 
 > Specify user cutomized settings in cloud_sync_setting.py.
 
+## Verify Uploaded files
+
+    $make verify
+
 ## Serving
 
     $ make run
