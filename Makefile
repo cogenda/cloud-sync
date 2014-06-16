@@ -7,6 +7,7 @@ help:
 	@echo ""
 	@echo "  run              to run cloud sync service"
 	@echo "  run-hard         to clean db files and restart sync service"
+	@echo "  verify           to verify synced files valid or not"
 	@echo ""
 
 run: 
@@ -17,6 +18,9 @@ run-hard:
 	@rm -rf *.log
 	@rm -rf *.db
 	@ptyhon cloud_sync.py
+
+verify:
+	@python utils/verify.py
 
 clean-pyc:
 	@find . -name '*.pyc' -exec rm -f {} +
