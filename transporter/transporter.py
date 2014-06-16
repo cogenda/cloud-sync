@@ -9,8 +9,6 @@ from django.core.files import File
 
 # Define exceptions.
 class TransporterError(Exception): pass
-class InvalidSettingError(TransporterError): pass
-class MissingSettingError(TransporterError): pass
 class InvalidCallbackError(TransporterError): pass
 class ConnectionError(TransporterError): pass
 class InvalidActionError(TransporterError): pass

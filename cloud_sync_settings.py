@@ -64,4 +64,4 @@ SCAN_PATHS={
         unicode('/Users/tim-tang/Work/test','utf-8'): 'static',
         }
 IGNORE_PATHS=[]
-TRANSPORTERS=['s3']
+TRANSPORTERS=['s3', 'oss']

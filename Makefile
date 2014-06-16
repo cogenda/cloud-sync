@@ -13,14 +13,14 @@ help:
 run: 
 	@python cloud_sync.py
 
-
+.PHONY: run-hard
 run-hard: 
 	@rm -rf *.log
 	@rm -rf *.db
-	@ptyhon cloud_sync.py
+	@python cloud_sync.py
 
 verify:
-	@python utils/verify.py
+	@python verify.py
 
 clean-pyc:
 	@find . -name '*.pyc' -exec rm -f {} +

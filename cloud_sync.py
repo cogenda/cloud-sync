@@ -17,6 +17,7 @@ if not 'DJANGO_SETTINGS_MODULE' in os.environ:
     os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_settings'
 
 from cloud_sync_settings import *
+from persistent.persistent_list import *
 from persistent.persistent_queue import *
 from fsmonitor.fsmonitor import *
 from transporter.transporter import Transporter, ConnectionError
