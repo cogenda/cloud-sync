@@ -40,8 +40,8 @@ if __name__ == "__main__":
         print "Error occurred in TransporterS3:", e
     else:
         oss.start()
-        oss.sync_file('/home/jiltang/Koala.jpg')
-        oss.sync_file('/home/jiltang/Koala.jpg', '/home/jiltang/Koala.jpg', Transporter.DELETE)
+        oss.sync_file('/home/jiltang/apache-ant-1.9.4-bin.zip')
+        #oss.sync_file('/home/jiltang/Koala.jpg', '/home/jiltang/Koala.jpg', Transporter.DELETE)
         time.sleep(5)
         oss.stop() 
 

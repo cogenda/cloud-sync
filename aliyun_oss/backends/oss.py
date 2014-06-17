@@ -22,7 +22,7 @@ HEADERS             = getattr(settings, 'OSS_HEADERS', {})
 DEFAULT_ACL         = getattr(settings, 'OSS_DEFAULT_ACL', 'public-read')
 OSS_STORAGE_BUCKET_NAME = getattr(settings, 'OSS_STORAGE_BUCKET_NAME')
 BUCKET_PREFIX       = getattr(settings, 'OSS_BUCKET_PREFIX', '')
-
+BUFFER_SIZE = getattr(settings, 'OSS_FILE_BUFFER_SIZE', 5242880)
 
 class OSSStorage(Storage):
     """Aliyun Open Storage Service"""
@@ -101,12 +101,18 @@ class OSSStorage(Storage):
 
     def _save(self, name, content):
         name = self._clean_name(name)
-        content.open()
-        if hasattr(content, 'chunks'):
-            content_str = ''.join(chunk for chunk in content.chunks())
+        content.seek(0, os.SEEK_END)
+        length = content.tell()
+        """ For big file use mutlipart upload"""
+        if length >= BUFFER_SIZE:
+            self.connection.multi_upload_file(self.bucket, name, content.name)
         else:
-            content_str = content.read()
-        self._put_file(name, content_str)
+            content.open()
+            if hasattr(content, 'chunks'):
+                content_str = ''.join(chunk for chunk in content.chunks())
+            else:
+                content_str = content.read()
+            self._put_file(name, content_str)
         return name
 
     def delete(self, name):
