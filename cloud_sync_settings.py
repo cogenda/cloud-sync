@@ -29,7 +29,7 @@ AWS_DEFAULT_ACL='public-read'
 ########################################################
 #               AliYun OSS CONFIGURATION               #           
 ########################################################
-OSS_ACCESS_URL='oss.aliyuncs.com'
+OSS_ACCESS_URL='oss-cn-hangzhou.aliyuncs.com'
 OSS_ACCESS_KEY_ID=os.environ.get('OSS_ACCESS_KEY_ID', None)
 OSS_SECRET_ACCESS_KEY=os.environ.get('OSS_SECRET_ACCESS_KEY', None)
 OSS_STORAGE_BUCKET_NAME = 'cogenda'
@@ -65,10 +65,10 @@ RETRY_INTERVAL=30
 ########################################################
 #                 USER SETTINGS                        #           
 ########################################################
-COGENDA_STATIC_HOME=os.environ.get('COGENDA_STATIC_HOME', None)
-COGENDA_MEDIA_HOME=os.environ.get('COGENDA_MEDIA_HOME', None)
+COGENDA_STATIC_HOME=unicode(os.environ.get('COGENDA_STATIC_HOME', None),'utf-8')
+#COGENDA_MEDIA_HOME=unicode(os.environ.get('COGENDA_MEDIA_HOME', None), 'utf-8')
 SCAN_PATHS={
-        unicode(COGENDA_STATIC_HOME,'utf-8'): 'static',
+        COGENDA_STATIC_HOME: 'static',
         }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3', 'oss']
