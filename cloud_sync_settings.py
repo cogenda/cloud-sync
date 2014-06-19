@@ -65,10 +65,10 @@ RETRY_INTERVAL=30
 ########################################################
 #                 USER SETTINGS                        #           
 ########################################################
-COGENDA_STATIC_HOME=os.environ.get('COGENDA_STATIC_HOME', None)
-COGENDA_MEDIA_HOME=os.environ.get('COGENDA_MEDIA_HOME', None)
+COGENDA_STATIC_HOME=unicode(os.environ.get('COGENDA_STATIC_HOME', None),'utf-8')
+COGENDA_MEDIA_HOME=unicode(os.environ.get('COGENDA_MEDIA_HOME', None), 'utf-8')
 SCAN_PATHS={
-        unicode(COGENDA_MEDIA_HOME,'utf-8'): 'static',
+        COGENDA_STATIC_HOME: 'static',
         }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3', 'oss']

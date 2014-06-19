@@ -19,6 +19,9 @@ run-hard:
 	@rm -rf *.db
 	@python cloud_sync.py
 
+travis:
+	@python travis_sync.py
+
 verify:
 	@python verify.py
 
