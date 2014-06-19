@@ -38,7 +38,7 @@ if __name__ == "__main__":
                     action=%d""" % (src, dst, action)
 
     
-    def sync_s3(source):
+    def sync_s3(source, dst):
         # Amazon S3
         try:
             s3 = TransporterS3(callback, error_callback,'Travis')
@@ -47,11 +47,11 @@ if __name__ == "__main__":
             sys.exit(2)
         else:
             s3.start()
-            s3.sync_file(source, 'static')
+            s3.sync_file(source, dst)
             time.sleep(3)
             s3.stop()
     
-    def sync_oss(source):
+    def sync_oss(source, dst):
         # AliYun OSS
         try:
             oss = TransporterOSS(callback, error_callback,'Travis')
@@ -60,7 +60,7 @@ if __name__ == "__main__":
             sys.exit(2)
         else:
             oss.start()
-            oss.sync_file(source, 'static')
+            oss.sync_file(source, dst)
             time.sleep(3)
             oss.stop()
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     for (path, filename, mtime) in files_in_dir:
         source = '%s/%s' %(path, filename)
         dst = calculate_transporter_dst(source, SCAN_PATHS.keys())
-        sync_s3(dst)
-        sync_oss(dst)
+        sync_s3(source, dst)
+        sync_oss(source, dst)
 
     print 'Travis CI Sync with OSS & S3 Successfully.'
