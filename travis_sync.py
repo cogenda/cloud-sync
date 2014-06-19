@@ -64,6 +64,27 @@ if __name__ == "__main__":
             time.sleep(3)
             oss.stop()
 
+    
+    def calculate_transporter_dst(src, relative_paths=[]):
+        dst = src
+        parent_path=None
+
+        # Strip off any relative paths.
+        for relative_path in relative_paths:
+            if dst.startswith(relative_path):
+                parent_path = SCAN_PATHS[relative_path]
+                dst = dst[len(relative_path):]
+
+        # Ensure no absolute path is returned, which would make os.path.join()
+        # fail.
+        dst = dst.lstrip(os.sep)
+
+        # Prepend any possible parent path.
+        if not parent_path is None:
+            dst = os.path.join(parent_path, dst)
+
+        return dst
+
     path = COGENDA_STATIC_HOME
     db = sqlite3.connect("pathscanner.db")
     db.text_factory = unicode # This is the default, but we set it explicitly, just to be sure.
@@ -75,7 +96,9 @@ if __name__ == "__main__":
     dbcur.execute("SELECT * FROM pathscanner WHERE mtime!=-1")
     files_in_dir = dbcur.fetchall()
     for (path, filename, mtime) in files_in_dir:
-        source = os.path.join(path, filename)
-        sync_s3(source)
-        sync_oss(source)
+        source = '%s/%s' %(path, filename)
+        dst = calculate_transporter_dst(source, SCAN_PATHS.keys())
+        sync_s3(dst)
+        sync_oss(dst)
+
     print 'Travis CI Sync with OSS & S3 Successfully.'
