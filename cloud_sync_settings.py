@@ -68,7 +68,7 @@ RETRY_INTERVAL=30
 COGENDA_STATIC_HOME=os.environ.get('COGENDA_STATIC_HOME', None)
 COGENDA_MEDIA_HOME=os.environ.get('COGENDA_MEDIA_HOME', None)
 SCAN_PATHS={
-        unicode(COGENDA_MEDIA_HOME,'utf-8'): 'static',
+        unicode(COGENDA_STATIC_HOME,'utf-8'): 'static',
         }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3', 'oss']

@@ -306,7 +306,7 @@ class CloudSync(threading.Thread):
                 item = self.failed_files[processed]
                 failed_items.append(item)
                 for server in TRANSPORTERS:
-                    self.transport_queue[server].put(item[0], item[1], server, item[0])
+                    self.transport_queue[server].put((item[0], item[1], server, item[0]))
                 processed += 1
             
             for item in failed_items:
