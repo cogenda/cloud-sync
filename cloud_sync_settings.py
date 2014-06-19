@@ -66,7 +66,7 @@ RETRY_INTERVAL=30
 #                 USER SETTINGS                        #           
 ########################################################
 COGENDA_STATIC_HOME=unicode(os.environ.get('COGENDA_STATIC_HOME', None),'utf-8')
-COGENDA_MEDIA_HOME=unicode(os.environ.get('COGENDA_MEDIA_HOME', None), 'utf-8')
+#COGENDA_MEDIA_HOME=unicode(os.environ.get('COGENDA_MEDIA_HOME', None), 'utf-8')
 SCAN_PATHS={
         COGENDA_STATIC_HOME: 'static',
         }
