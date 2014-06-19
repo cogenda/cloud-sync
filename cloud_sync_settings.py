@@ -29,7 +29,7 @@ AWS_DEFAULT_ACL='public-read'
 ########################################################
 #               AliYun OSS CONFIGURATION               #           
 ########################################################
-OSS_ACCESS_URL='oss.aliyuncs.com'
+OSS_ACCESS_URL='oss-cn-hangzhou.aliyuncs.com'
 OSS_ACCESS_KEY_ID=os.environ.get('OSS_ACCESS_KEY_ID', None)
 OSS_SECRET_ACCESS_KEY=os.environ.get('OSS_SECRET_ACCESS_KEY', None)
 OSS_STORAGE_BUCKET_NAME = 'cogenda'
