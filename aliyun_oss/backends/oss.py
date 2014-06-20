@@ -136,7 +136,11 @@ class OSSStorage(Storage):
     def url(self, name):
         name = self._clean_name(name)
         return 'http://%s.%s/%s' % (self.bucket, ACCESS_ADDRESS, name)
-        #return '%s%s' % (settings.MEDIA_URL, name)
+        #url = 'http://%s.%s/%s' % (self.bucket, ACCESS_ADDRESS, name)
+        #timeout=3600
+        #resource = "/" + self.bucket + "/" + name
+        #headers = {}
+        #return self.connection.sign_url_auth_with_expire_time('GET', url, headers, resource, timeout)
 
     def modified_time(self, name):
         try:
