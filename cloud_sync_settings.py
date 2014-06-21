@@ -2,45 +2,10 @@
 import os
 import logging
 
-# Dummy settings for `django-storages`.
+""" Dummy settings for `django-storages` """
 SECRET_KEY='cogenda-cloud-sync'
 MEDIA_URL=''
 MEDIA_ROOT=''
-
-
-########################################################
-#               AWS S3 CONFIGURATION                   #           
-########################################################
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', None)
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
-AWS_STORAGE_BUCKET_NAME = 'cogenda'
-AWS_QUERYSTRING_AUTH = False
-#The minimum part size(byte) (if there is more than one part).
-#This value must be >= 5M
-AWS_S3_FILE_BUFFER_SIZE=5*1024*1024
-AWS_HEADERS = {
-        'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT', 
-        'Cache-Control': 'max-age=86400',
-        'Vary':'Accept-Encoding',
-        }
-AWS_DEFAULT_ACL='public-read'
-
-
-########################################################
-#               AliYun OSS CONFIGURATION               #           
-########################################################
-OSS_ACCESS_URL='oss-cn-hangzhou.aliyuncs.com'
-OSS_ACCESS_KEY_ID=os.environ.get('OSS_ACCESS_KEY_ID', None)
-OSS_SECRET_ACCESS_KEY=os.environ.get('OSS_SECRET_ACCESS_KEY', None)
-OSS_STORAGE_BUCKET_NAME = 'cogenda'
-OSS_HEADERS = {
-        'Cache-Control': 'max-age=31536000', 
-        }
-OSS_DEFAULT_ACL = 'public-read'
-#The minimum part size(byte) (if there is more than one part).
-#This value must be >= 5M
-OSS_FILE_BUFFER_SIZE=5*1024*1024
-
 
 ########################################################
 #               CLOUD SYNC CONFIGURATION               #           
@@ -63,12 +28,57 @@ RETRY_INTERVAL=30
 
 
 ########################################################
+#               AWS S3 CONFIGURATION                   #           
+########################################################
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', None)
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
+#The minimum part size(byte) (if there is more than one part). This value must be >= 5M
+AWS_S3_FILE_BUFFER_SIZE=5*1024*1024
+AWS_HEADERS = {
+        'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT', 
+        'Cache-Control': 'max-age=86400',
+        'Vary':'Accept-Encoding',
+        }
+""" The `private/public` bucket name """
+AWS_STORAGE_BUCKET_NAME = 'cogenda'
+""" `True` for priavte file, `False` for public file """
+#AWS_QUERYSTRING_AUTH = True 
+AWS_QUERYSTRING_AUTH = False
+
+""" `private` for private file, `public-read` for public file """
+AWS_DEFAULT_ACL='public-read'
+#AWS_DEFAULT_ACL='private'
+
+
+########################################################
+#               AliYun OSS CONFIGURATION               #           
+########################################################
+OSS_ACCESS_URL='oss-cn-hangzhou.aliyuncs.com'
+OSS_ACCESS_KEY_ID=os.environ.get('OSS_ACCESS_KEY_ID', None)
+OSS_SECRET_ACCESS_KEY=os.environ.get('OSS_SECRET_ACCESS_KEY', None)
+OSS_HEADERS = {
+        'Cache-Control': 'max-age=31536000', 
+        }
+
+""" The `private/public` bucket name """
+OSS_STORAGE_BUCKET_NAME = 'cogenda'
+#OSS_STORAGE_BUCKET_NAME = 'cogenda-media'
+"""The minimum part size(byte) (if there is more than one part). This value must be >= 5M """
+OSS_FILE_BUFFER_SIZE=5*1024*1024
+
+""" `private` for private file, `public-read` for public file """
+OSS_DEFAULT_ACL = 'public-read'
+#OSS_DEFAULT_ACL = 'private'
+
+
+########################################################
 #                 USER SETTINGS                        #           
 ########################################################
 COGENDA_STATIC_HOME=unicode(os.environ.get('COGENDA_STATIC_HOME', None),'utf-8')
 #COGENDA_MEDIA_HOME=unicode(os.environ.get('COGENDA_MEDIA_HOME', None), 'utf-8')
 SCAN_PATHS={
-        COGENDA_STATIC_HOME: 'static',
+#        COGENDA_STATIC_HOME: 'static',
+        COGENDA_MEDIA_HOME: 'media',
         }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3', 'oss']
