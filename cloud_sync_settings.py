@@ -77,8 +77,8 @@ OSS_DEFAULT_ACL = 'public-read'
 COGENDA_STATIC_HOME=unicode(os.environ.get('COGENDA_STATIC_HOME', None),'utf-8')
 #COGENDA_MEDIA_HOME=unicode(os.environ.get('COGENDA_MEDIA_HOME', None), 'utf-8')
 SCAN_PATHS={
-#        COGENDA_STATIC_HOME: 'static',
-        COGENDA_MEDIA_HOME: 'media',
+        COGENDA_STATIC_HOME: 'static',
+        #COGENDA_MEDIA_HOME: 'media',
         }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3', 'oss']
