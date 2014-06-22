@@ -32,6 +32,7 @@ RETRY_INTERVAL=30
 ########################################################
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', None)
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
+AWS_QUERYSTRING_EXPIRE = 60*60*24*365*10
 #The minimum part size(byte) (if there is more than one part). This value must be >= 5M
 AWS_S3_FILE_BUFFER_SIZE=5*1024*1024
 AWS_HEADERS = {
@@ -45,6 +46,7 @@ AWS_STORAGE_BUCKET_NAME = 'cogenda'
 #AWS_QUERYSTRING_AUTH = True 
 AWS_QUERYSTRING_AUTH = False
 
+
 """ `private` for private file, `public-read` for public file """
 AWS_DEFAULT_ACL='public-read'
 #AWS_DEFAULT_ACL='private'
@@ -56,7 +58,9 @@ AWS_DEFAULT_ACL='public-read'
 OSS_ACCESS_URL='oss-cn-hangzhou.aliyuncs.com'
 OSS_ACCESS_KEY_ID=os.environ.get('OSS_ACCESS_KEY_ID', None)
 OSS_SECRET_ACCESS_KEY=os.environ.get('OSS_SECRET_ACCESS_KEY', None)
+OSS_QUERYSTRING_EXPIRE = 60*60*24*365*10
 OSS_HEADERS = {
+        'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT', 
         'Cache-Control': 'max-age=31536000', 
         }
 

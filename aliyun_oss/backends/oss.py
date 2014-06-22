@@ -23,6 +23,7 @@ DEFAULT_ACL         = getattr(settings, 'OSS_DEFAULT_ACL', 'public-read')
 OSS_STORAGE_BUCKET_NAME = getattr(settings, 'OSS_STORAGE_BUCKET_NAME')
 BUCKET_PREFIX       = getattr(settings, 'OSS_BUCKET_PREFIX', '')
 BUFFER_SIZE = getattr(settings, 'OSS_FILE_BUFFER_SIZE', 5242880)
+OSS_QUERYSTRING_EXPIRE = getattr(setting, 'OSS_QUERYSTRING_EXPIRE', 3600)
 
 class OSSStorage(Storage):
     """Aliyun Open Storage Service"""
@@ -137,10 +138,9 @@ class OSSStorage(Storage):
         name = self._clean_name(name)
         if self.acl == 'private':
             url = 'http://%s.%s/%s' % (self.bucket, ACCESS_ADDRESS, name)
-            timeout=3600
             resource = "/" + self.bucket + "/" + name
             headers = {}
-            return self.connection.sign_url_auth_with_expire_time('GET', url, headers, resource, timeout)
+            return self.connection.sign_url_auth_with_expire_time('GET', url, headers, resource, OSS_QUERYSTRING_EXPIRE)
         return 'http://%s.%s/%s' % (self.bucket, ACCESS_ADDRESS, name)
 
     def modified_time(self, name):
