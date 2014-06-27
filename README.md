@@ -13,22 +13,27 @@ Auto upload tool for AWS S3 & AliYun OSS.
 
 - Auto monitor system file operations (CREATE/DELETE/MODIFY)
 - Auto transport monitored file to AWS S3 & AliYun OSS.
+- Auto Sync upload files with cogenda web server.
 - Record synced files into SQLite DB.
 
-## Preparation
+### Preparation
 
     $ ./setenv
     $ source venv/bin/activate
 
 > Specify user cutomized settings in cloud_sync_setting.py.
 
-## Verify Uploaded files
+## Serving public files
+
+    $ make run-public
+
+### Serving private files
+
+    $ make run-private
+
+### Verify uploaded files
 
     $make verify
-
-## Serving
-
-    $ make run
 
 ## Stop Serving
 

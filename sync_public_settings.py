@@ -8,16 +8,6 @@ MEDIA_URL=''
 MEDIA_ROOT=''
 
 ########################################################
-#             SYNC COGENDA WEB SETTINGS             #           
-########################################################
-WS_HOST='http://localhost:8088'
-API_AUTH='/security/authenticate-ws'
-API_MODIFY_RESOURCE='/api/modify-resource'
-API_DESTROY_RESOURCE='/api/destroy-resource'
-COGENDA_SHARED_SECRET=os.environ.get('COGENDA_SHARED_SECRET', 'cogenda-ws-secret')
-
-
-########################################################
 #               CLOUD SYNC SETTINGS                    #           
 ########################################################
 RESTART_AFTER_UNHANDLED_EXCEPTION = False
@@ -53,13 +43,11 @@ AWS_HEADERS = {
 """ The `private/public` bucket name """
 AWS_STORAGE_BUCKET_NAME = 'cogenda'
 """ `True` for priavte file, `False` for public file """
-#AWS_QUERYSTRING_AUTH = True 
 AWS_QUERYSTRING_AUTH = False
 
 
 """ `private` for private file, `public-read` for public file """
 AWS_DEFAULT_ACL='public-read'
-#AWS_DEFAULT_ACL='private'
 
 
 ########################################################
@@ -76,23 +64,19 @@ OSS_HEADERS = {
 
 """ The `private/public` bucket name """
 OSS_STORAGE_BUCKET_NAME = 'cogenda'
-#OSS_STORAGE_BUCKET_NAME = 'cogenda-media'
 """The minimum part size(byte) (if there is more than one part). This value must be >= 5M """
 OSS_FILE_BUFFER_SIZE=5*1024*1024
 
 """ `private` for private file, `public-read` for public file """
 OSS_DEFAULT_ACL = 'public-read'
-#OSS_DEFAULT_ACL = 'private'
 
 
 ########################################################
 #                 USER SETTINGS                        #           
 ########################################################
 COGENDA_STATIC_HOME=unicode(os.environ.get('COGENDA_STATIC_HOME', None),'utf-8')
-#COGENDA_MEDIA_HOME=unicode(os.environ.get('COGENDA_MEDIA_HOME', None), 'utf-8')
 SCAN_PATHS={
         COGENDA_STATIC_HOME: 'static',
-        #COGENDA_MEDIA_HOME: 'media',
         }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3', 'oss']

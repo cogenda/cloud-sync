@@ -9,7 +9,7 @@ from cloud_sync_settings import *
 
 
 if not 'DJANGO_SETTINGS_MODULE' in os.environ:
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_settings'
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'sync_public_settings'
 
 from transporter.transporter_s3 import *
 from transporter.transporter_oss import *

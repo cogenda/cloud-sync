@@ -13,9 +13,6 @@ from UserList import UserList
 import os.path
 import signal
 
-if not 'DJANGO_SETTINGS_MODULE' in os.environ:
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_settings'
-
 from cloud_sync_settings import *
 from persistent.persistent_list import *
 from persistent.persistent_queue import *
@@ -176,7 +173,13 @@ class CloudSync(threading.Thread):
         self.logger.info("Final sync of discover queue to pipeline queue made.")
 
         # Stop the transporters and wait for their threads to end.
-        #TODO:
+        # Stop the transporters and wait for their threads to end.
+        for server in TRANSPORTERS:
+            if len(self.transporters[server]):
+                for transporter in self.transporters[server]:
+                    transporter.stop()
+                    transporter.join()
+                self.logger.warning("Stopped transporters for the '%s' server." % (server))
 
         # Log information about the synced files DB.
         self.dbcur.execute("SELECT COUNT(input_file) FROM synced_files")
@@ -332,20 +335,25 @@ class CloudSync(threading.Thread):
             # Commit the result to the database.            
             transported_file_basename = os.path.basename(output_file)
             if event == FSMonitor.CREATED:
-                result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
-                if not result:
-                    self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server)
-                    continue
+                """ Sync file resource with cogenda web server """
+                if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
+                    result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
+                    if not result:
+                        self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
+                        continue
+
                 try:
                     self.dbcur.execute("INSERT INTO synced_files VALUES(?, ?, ?, ?)", (input_file, transported_file_basename, url, server))
                     self.dbcon.commit()
                 except sqlite3.IntegrityError, e:
                     self.logger.critical("Database integrity error: %s. Duplicate key: input_file = '%s', server = '%s'." % (e, input_file, server))
+
             elif event == FSMonitor.MODIFIED:
-                result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
-                if not result:
-                    self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server)
-                    continue
+                if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
+                    result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
+                    if not result:
+                        self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
+                        continue
 
                 self.dbcur.execute("SELECT COUNT(*) FROM synced_files WHERE input_file=? AND server=?", (input_file, server))
                 if self.dbcur.fetchone()[0] > 0:
@@ -362,10 +370,12 @@ class CloudSync(threading.Thread):
                     self.dbcur.execute("INSERT INTO synced_files VALUES(?, ?, ?, ?)", (input_file, transported_file_basename, url, server))
                     self.dbcon.commit()
             elif event == FSMonitor.DELETED:
-                result = syncHelper.destroy_resource(transported_file_basename, server)
-                if not result:
-                    self.logger.critical('Failed to delete resource with cogenda server filename: [%s] vendor: [%s]' %(transported_file_basename, server))
-                    continue
+                if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
+                    result = syncHelper.destroy_resource(transported_file_basename, server)
+                    if not result:
+                        self.logger.critical('Failed to delete resource with cogenda server filename: [%s] vendor: [%s]' %(transported_file_basename, server))
+                        continue
+
                 self.dbcur.execute("DELETE FROM synced_files WHERE input_file=? AND server=?", (input_file, server))
                 self.dbcon.commit()
             else:
@@ -580,6 +590,12 @@ def run_cloud_sync(restart=False):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        if not 'DJANGO_SETTINGS_MODULE' in os.environ:
+            os.environ['DJANGO_SETTINGS_MODULE'] = sys.argv[1]
+    else:
+        sys.exist(2)
+
     if not RESTART_AFTER_UNHANDLED_EXCEPTION:
         run_cloud_sync()
     else:
