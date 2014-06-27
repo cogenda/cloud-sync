@@ -20,6 +20,7 @@ from cloud_sync_settings import *
 from persistent.persistent_list import *
 from persistent.persistent_queue import *
 from fsmonitor.fsmonitor import *
+from helper.sync_helper import SyncHelper
 from transporter.transporter import Transporter, ConnectionError
 from daemon_thread_runner import *
 
@@ -318,6 +319,11 @@ class CloudSync(threading.Thread):
 
     def __process_db_queue(self):
         processed = 0 
+        syncHelper = SyncHelper(congenda_shared_secret=COGENDA_SHARED_SECRET,
+                ws_host=WS_HOST,
+                api_modify_resource=API_MODIFY_RESOURCE,
+                api_destroy_resource=API_DESTROY_RESOURCE)
+
         while processed < QUEUE_PROCESS_BATCH_SIZE and self.db_queue.qsize() > 0:
             # DB queue -> database.
             self.lock.acquire()
@@ -326,12 +332,21 @@ class CloudSync(threading.Thread):
             # Commit the result to the database.            
             transported_file_basename = os.path.basename(output_file)
             if event == FSMonitor.CREATED:
+                result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
+                if not result:
+                    self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server)
+                    continue
                 try:
                     self.dbcur.execute("INSERT INTO synced_files VALUES(?, ?, ?, ?)", (input_file, transported_file_basename, url, server))
                     self.dbcon.commit()
                 except sqlite3.IntegrityError, e:
                     self.logger.critical("Database integrity error: %s. Duplicate key: input_file = '%s', server = '%s'." % (e, input_file, server))
             elif event == FSMonitor.MODIFIED:
+                result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
+                if not result:
+                    self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server)
+                    continue
+
                 self.dbcur.execute("SELECT COUNT(*) FROM synced_files WHERE input_file=? AND server=?", (input_file, server))
                 if self.dbcur.fetchone()[0] > 0:
                     # Look up the transported file's base name. This
@@ -347,6 +362,10 @@ class CloudSync(threading.Thread):
                     self.dbcur.execute("INSERT INTO synced_files VALUES(?, ?, ?, ?)", (input_file, transported_file_basename, url, server))
                     self.dbcon.commit()
             elif event == FSMonitor.DELETED:
+                result = syncHelper.destroy_resource(transported_file_basename, server)
+                if not result:
+                    self.logger.critical('Failed to delete resource with cogenda server filename: [%s] vendor: [%s]' %(transported_file_basename, server))
+                    continue
                 self.dbcur.execute("DELETE FROM synced_files WHERE input_file=? AND server=?", (input_file, server))
                 self.dbcon.commit()
             else:

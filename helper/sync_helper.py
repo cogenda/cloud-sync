@@ -15,27 +15,14 @@ class SyncHelperError(Exception): pass
 class SyncHelper(object):
 
     def __init__(self, 
-            ws_host='http://localhost:8088', 
             cogenda_shared_secret='cogenda-ws-secret', 
+            ws_host='http://localhost:8088', 
             api_modify_resource='/api/modify-resource',
             api_destroy_resource='/api/destroy-resource'):
         self.cogenda_shared_secret = cogenda_shared_secret
         self.ws_host = ws_host
         self.api_modify_resource = api_modify_resource
         self.api_destroy_resource = api_destroy_resource
-
-
-    """"
-    def authenticate(self):
-        headers = {'content-type': 'application/json'}
-        resp = requests.post('%s%s' %(self.ws_host, self.api_auth), data=self.basic_auth, headers=headers)
-        if resp.status_code != 200:
-            return None
-        result = json.loads(resp.json())
-        if result['auth_success']:
-            return result['auth_token']
-        return None
-    """
 
 
     def sync_resource(self, filename, url, status, server):
