@@ -8,6 +8,16 @@ MEDIA_URL=''
 MEDIA_ROOT=''
 
 ########################################################
+#             SYNC COGENDA WEB SETTINGS             #           
+########################################################
+WS_HOST='http://localhost:8088'
+API_AUTH='/security/authenticate-ws'
+API_MODIFY_RESOURCE='/api/modify-resource'
+API_DESTROY_RESOURCE='/api/destroy-resource'
+COGENDA_SHARED_SECRET='cogenda-ws-secret'
+
+
+########################################################
 #               CLOUD SYNC SETTINGS                    #           
 ########################################################
 RESTART_AFTER_UNHANDLED_EXCEPTION = False
@@ -68,7 +78,7 @@ OSS_STORAGE_BUCKET_NAME = 'cogenda'
 OSS_FILE_BUFFER_SIZE=5*1024*1024
 
 """ `private` for private file, `public-read` for public file """
-OSS_DEFAULT_ACL = 'public-read'
+OSS_DEFAULT_ACL='public-read'
 
 
 ########################################################
@@ -79,4 +89,4 @@ SCAN_PATHS={
         COGENDA_STATIC_HOME: 'static',
         }
 IGNORE_PATHS=[]
-TRANSPORTERS=['s3', 'oss']
+TRANSPORTERS=['s3']

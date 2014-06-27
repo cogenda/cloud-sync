@@ -5,7 +5,7 @@ import os
 import os.path
 from scanner.path_scanner import PathScanner
 import sqlite3
-from cloud_sync_settings import *
+from sync_public_settings import *
 
 
 if not 'DJANGO_SETTINGS_MODULE' in os.environ:

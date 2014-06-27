@@ -13,13 +13,14 @@ from UserList import UserList
 import os.path
 import signal
 
-from cloud_sync_settings import *
 from persistent.persistent_list import *
 from persistent.persistent_queue import *
 from fsmonitor.fsmonitor import *
 from helper.sync_helper import SyncHelper
 from transporter.transporter import Transporter, ConnectionError
 from daemon_thread_runner import *
+from sync_public_settings import *
+#from sync_private_settings import *
 
 
 # Define exceptions.
@@ -322,7 +323,8 @@ class CloudSync(threading.Thread):
 
     def __process_db_queue(self):
         processed = 0 
-        syncHelper = SyncHelper(congenda_shared_secret=COGENDA_SHARED_SECRET,
+        syncHelper = SyncHelper(
+                cogenda_shared_secret=COGENDA_SHARED_SECRET,
                 ws_host=WS_HOST,
                 api_modify_resource=API_MODIFY_RESOURCE,
                 api_destroy_resource=API_DESTROY_RESOURCE)
@@ -456,6 +458,7 @@ class CloudSync(threading.Thread):
                 module = __import__(module_name, globals(), locals(), ["TRANSPORTER_CLASS"], -1)
             except ImportError:
                 pass
+
         if not module:
             msg = "The transporter module '%s' could not be found." % transporter
             if len(alternatives) > 1:
