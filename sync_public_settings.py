@@ -89,4 +89,4 @@ SCAN_PATHS={
         COGENDA_STATIC_HOME: 'static',
         }
 IGNORE_PATHS=[]
-TRANSPORTERS=['s3']
+TRANSPORTERS=['s3', 'oss']

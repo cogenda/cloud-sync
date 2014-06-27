@@ -19,8 +19,6 @@ from fsmonitor.fsmonitor import *
 from helper.sync_helper import SyncHelper
 from transporter.transporter import Transporter, ConnectionError
 from daemon_thread_runner import *
-from sync_public_settings import *
-#from sync_private_settings import *
 
 
 # Define exceptions.
@@ -594,8 +592,16 @@ def run_cloud_sync(restart=False):
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
+        setting = None
+        if sys.argv[1] == 'public':
+            from sync_public_settings import *
+            setting = 'sync_public_settings'
+        else:
+            from sync_private_settings import *
+            setting = 'sync_private_settings'
+
         if not 'DJANGO_SETTINGS_MODULE' in os.environ:
-            os.environ['DJANGO_SETTINGS_MODULE'] = sys.argv[1]
+            os.environ['DJANGO_SETTINGS_MODULE'] = setting
     else:
         sys.exist(2)
 

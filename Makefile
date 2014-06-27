@@ -10,16 +10,14 @@ help:
 	@echo "  verify           to verify synced files valid or not"
 	@echo ""
 
-SYNC_PUBLIC_SETTING=sync_public_settings
-SYNC_PRIVATE_SETTINGS=sync_private_settings
 
 .PHONY: run-public
 run-public: 
-	@python cloud_sync.py ${SYNC_PUBLIC_SETTING}
+	@python cloud_sync.py public
 
 .PHONY: run-private
 run-private:
-	@python cloud_sync.py ${SYNC_PRIVATE_SETTING}
+	@python cloud_sync.py private
 
 travis:
 	@python travis_sync.py
