@@ -5,60 +5,75 @@
 import requests
 from requests.auth import HTTPBasicAuth
 import json
+import hmac
+import base64
+import hashlib
 
 # Define exceptions.
 class SyncHelperError(Exception): pass
 
 class SyncHelper(object):
 
-    WS_HOST='http://localhost:8088'
-    API_AUTHENTICATION='/security/authenticate-ws'
-    API_MODIFY_RESOURCE='/api/modify-resource'
-    API_DESTROY_RESOURCE='/api/destroy-resource'
-    BASIC_AUTH=json.dumps({'username': 'cogenda', 'password':'cogenda'})
+    def __init__(self, 
+            ws_host='http://localhost:8088', 
+            cogenda_shared_secret='cogenda-ws-secret', 
+            api_modify_resource='/api/modify-resource',
+            api_destroy_resource='/api/destroy-resource'):
+        self.cogenda_shared_secret = cogenda_shared_secret
+        self.ws_host = ws_host
+        self.api_modify_resource = api_modify_resource
+        self.api_destroy_resource = api_destroy_resource
 
 
-    @staticmethod
-    def authenticate():
+    """"
+    def authenticate(self):
         headers = {'content-type': 'application/json'}
-        resp = requests.post('%s%s' %(SyncHelper.WS_HOST, SyncHelper.API_AUTHENTICATION), data=SyncHelper.BASIC_AUTH, headers=headers)
+        resp = requests.post('%s%s' %(self.ws_host, self.api_auth), data=self.basic_auth, headers=headers)
         if resp.status_code != 200:
             return None
         result = json.loads(resp.json())
         if result['auth_success']:
             return result['auth_token']
         return None
+    """
 
 
-    @staticmethod
-    def sync_resource(auth_token, filename, url, status, server):
+    def sync_resource(self, filename, url, status, server):
         payload = json.dumps({'filename': filename, 'url': url, 'status': status, 'server': server, 'type': '0'})
+        auth_token = self._make_hamc_key(payload)
         headers = {'content-type': 'application/json', 'Authorization': auth_token}
-        response = requests.post('%s%s' %(SyncHelper.WS_HOST, SyncHelper.API_MODIFY_RESOURCE), data=payload, headers=headers)
+        response = requests.post('%s%s' %(self.ws_host, self.api_modify_resource), data=payload, headers=headers)
         if response.status_code != 200:
             return None
         return json.loads(response.json())
 
 
-    @staticmethod    
-    def destroy_resource(auth_token, filename, server):
+    def destroy_resource(self, filename, server):
         payload = json.dumps({'filename': filename, 'server': server})
+        auth_token = self._make_hamc_key(payload)
         headers = {'content-type': 'application/json', 'Authorization': auth_token}
-        response = requests.post('%s%s' %(SyncHelper.WS_HOST, SyncHelper.API_DESTROY_RESOURCE), data=payload, headers=headers)
+        response = requests.post('%s%s' %(self.ws_host, self.api_destroy_resource), data=payload, headers=headers)
         if response.status_code != 200:
             return None
         return json.loads(response.json())
 
 
+    def _make_hamc_key(self, message):
+        """ Generate HMAC key """
+        auth_token = base64.b64encode(hmac.new(self.cogenda_shared_secret, message, digestmod=hashlib.sha256).digest())
+        return auth_token
 
 
 if __name__ == '__main__':
-    auth_token = SyncHelper.authenticate()
-    if not auth_token:
-        raise SyncHelperError('Authenticate with cogenda server failed!')
 
-    print '-----------------------'
-    print auth_token
-    print '-----------------------'
-    print SyncHelper.sync_resource(auth_token, 'xxxxxx', 'http://test.com/xx.png', '1', 'oss')
-    print SyncHelper.destroy_resource(auth_token, 'xxxxxx', 'oss')
+    WS_HOST='http://localhost:8088'
+    API_MODIFY_RESOURCE='/api/modify-resource'
+    API_DESTROY_RESOURCE='/api/destroy-resource'
+
+    syncHelper = SyncHelper(ws_host=WS_HOST, 
+        cogenda_shared_secret='cogenda-ws-secret', 
+        api_modify_resource=API_MODIFY_RESOURCE, 
+        api_destroy_resource=API_DESTROY_RESOURCE)
+
+    print syncHelper.sync_resource('xxxxxx', 'http://test.com/xx.png', '1', 'oss')
+    print syncHelper.destroy_resource('xxxxxx', 'oss')

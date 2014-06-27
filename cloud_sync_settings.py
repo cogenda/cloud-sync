@@ -8,7 +8,17 @@ MEDIA_URL=''
 MEDIA_ROOT=''
 
 ########################################################
-#               CLOUD SYNC CONFIGURATION               #           
+#             SYNC COGENDA WEB SETTINGS             #           
+########################################################
+WS_HOST='http://localhost:8088'
+API_AUTH='/security/authenticate-ws'
+API_MODIFY_RESOURCE='/api/modify-resource'
+API_DESTROY_RESOURCE='/api/destroy-resource'
+COGENDA_SHARED_SECRET=os.environ.get('COGENDA_SHARED_SECRET', 'cogenda-ws-secret')
+
+
+########################################################
+#               CLOUD SYNC SETTINGS                    #           
 ########################################################
 RESTART_AFTER_UNHANDLED_EXCEPTION = False
 RESTART_INTERVAL = 10
@@ -28,7 +38,7 @@ RETRY_INTERVAL=30
 
 
 ########################################################
-#               AWS S3 CONFIGURATION                   #           
+#               AWS S3 SETTINGS                        #           
 ########################################################
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', None)
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
@@ -53,7 +63,7 @@ AWS_DEFAULT_ACL='public-read'
 
 
 ########################################################
-#               AliYun OSS CONFIGURATION               #           
+#               AliYun OSS SETTINGS                    #           
 ########################################################
 OSS_ACCESS_URL='oss-cn-hangzhou.aliyuncs.com'
 OSS_ACCESS_KEY_ID=os.environ.get('OSS_ACCESS_KEY_ID', None)

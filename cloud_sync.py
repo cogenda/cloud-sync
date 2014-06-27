@@ -324,7 +324,6 @@ class CloudSync(threading.Thread):
             (input_file, event, processed_for_server, output_file, transported_file, url, server) = self.db_queue.get()
             self.lock.release()
             # Commit the result to the database.            
-            remove_server_from_remaining_transporters = True
             transported_file_basename = os.path.basename(output_file)
             if event == FSMonitor.CREATED:
                 try:
@@ -344,6 +343,17 @@ class CloudSync(threading.Thread):
                     # the input_file that has been transported.
                     self.dbcur.execute("UPDATE synced_files SET transported_file_basename=?, url=? WHERE input_file=? AND server=?", (transported_file_basename, url, input_file, server))
                     self.dbcon.commit()
+                else:
+                    self.dbcur.execute("INSERT INTO synced_files VALUES(?, ?, ?, ?)", (input_file, transported_file_basename, url, server))
+                    self.dbcon.commit()
+            elif event == FSMonitor.DELETED:
+                self.dbcur.execute("DELETE FROM synced_files WHERE input_file=? AND server=?", (input_file, server))
+                self.dbcon.commit()
+            else:
+                raise Exception("Non-existing event set.")
+
+            self.logger.debug("DB queue -> 'synced files' DB: '%s' (URL: '%s')." % (input_file, url))
+        processed += 1
 
 
     def __get_transporter(self, server):
