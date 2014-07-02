@@ -6,7 +6,7 @@ import httplib
 import urlparse
 import sqlite3
 import sys
-from cloud_sync_settings import *
+from sync_public_settings import *
 
 num_files_checked = 0
 num_files_invalid = 0
