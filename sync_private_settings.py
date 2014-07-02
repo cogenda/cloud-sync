@@ -51,7 +51,7 @@ AWS_HEADERS = {
         'Vary':'Accept-Encoding',
         }
 """ The `private/public` bucket name """
-AWS_STORAGE_BUCKET_NAME = 'cogenda'
+AWS_STORAGE_BUCKET_NAME = 'cogenda-pvt'
 """ `True` for priavte file, `False` for public file """
 AWS_QUERYSTRING_AUTH = True 
 
@@ -90,3 +90,4 @@ SCAN_PATHS={
         }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3', 'oss']
+#TRANSPORTERS=['s3']

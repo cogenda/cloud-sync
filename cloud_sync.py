@@ -337,7 +337,7 @@ class CloudSync(threading.Thread):
             if event == FSMonitor.CREATED:
                 """ Sync file resource with cogenda web server """
                 if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
-                    result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
+                    result = syncHelper.sync_resource(transported_file_basename, url, '0', server)
                     if not result:
                         self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
                         continue
@@ -350,7 +350,7 @@ class CloudSync(threading.Thread):
 
             elif event == FSMonitor.MODIFIED:
                 if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
-                    result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
+                    result = syncHelper.sync_resource(transported_file_basename, url, '0', server)
                     if not result:
                         self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
                         continue
