@@ -11,7 +11,6 @@ MEDIA_ROOT=''
 #             SYNC COGENDA WEB SETTINGS             #           
 ########################################################
 WS_HOST='http://localhost:8088'
-API_AUTH='/security/authenticate-ws'
 API_MODIFY_RESOURCE='/api/modify-resource'
 API_DESTROY_RESOURCE='/api/destroy-resource'
 COGENDA_SHARED_SECRET='cogenda-ws-secret'

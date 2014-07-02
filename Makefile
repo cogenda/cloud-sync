@@ -11,13 +11,13 @@ help:
 	@echo ""
 
 
-.PHONY: run-public
-run-public: 
-	@python cloud_sync.py public
+.PHONY: run-pub
+run-pub: 
+	@python cloud_sync.py pub
 
-.PHONY: run-private
-run-private:
-	@python cloud_sync.py private
+.PHONY: run-pvt
+run-pvt:
+	@python cloud_sync.py pvt
 
 travis:
 	@python travis_sync.py

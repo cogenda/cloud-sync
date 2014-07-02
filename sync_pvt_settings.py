@@ -10,8 +10,8 @@ MEDIA_ROOT=''
 ########################################################
 #             SYNC COGENDA WEB SETTINGS             #           
 ########################################################
-WS_HOST='http://localhost:8088'
-API_AUTH='/security/authenticate-ws'
+#WS_HOST='http://localhost:8088'
+WS_HOST='http://uk.cogenda.com'
 API_MODIFY_RESOURCE='/api/modify-resource'
 API_DESTROY_RESOURCE='/api/destroy-resource'
 COGENDA_SHARED_SECRET=os.environ.get('COGENDA_SHARED_SECRET', 'cogenda-ws-secret')
@@ -73,7 +73,7 @@ OSS_HEADERS = {
         }
 
 """ The `private/public` bucket name """
-OSS_STORAGE_BUCKET_NAME = 'cogenda-media'
+OSS_STORAGE_BUCKET_NAME = 'cogenda-pvt'
 """The minimum part size(byte) (if there is more than one part). This value must be >= 5M """
 OSS_FILE_BUFFER_SIZE=5*1024*1024
 
@@ -86,8 +86,7 @@ OSS_DEFAULT_ACL = 'private'
 ########################################################
 COGENDA_MEDIA_HOME=unicode(os.environ.get('COGENDA_MEDIA_HOME', None), 'utf-8')
 SCAN_PATHS={
-        COGENDA_MEDIA_HOME: 'media',
+        COGENDA_MEDIA_HOME: 'resource',
         }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3', 'oss']
-#TRANSPORTERS=['s3']

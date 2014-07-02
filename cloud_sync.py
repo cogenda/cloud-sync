@@ -337,7 +337,7 @@ class CloudSync(threading.Thread):
             if event == FSMonitor.CREATED:
                 """ Sync file resource with cogenda web server """
                 if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
-                    result = syncHelper.sync_resource(transported_file_basename, url, '0', server)
+                    result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
                     if not result:
                         self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
                         continue
@@ -350,7 +350,7 @@ class CloudSync(threading.Thread):
 
             elif event == FSMonitor.MODIFIED:
                 if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
-                    result = syncHelper.sync_resource(transported_file_basename, url, '0', server)
+                    result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
                     if not result:
                         self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
                         continue
@@ -593,12 +593,12 @@ def run_cloud_sync(restart=False):
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         setting = None
-        if sys.argv[1] == 'public':
-            from sync_public_settings import *
-            setting = 'sync_public_settings'
+        if sys.argv[1] == 'pub':
+            from sync_pub_settings import *
+            setting = 'sync_pub_settings'
         else:
-            from sync_private_settings import *
-            setting = 'sync_private_settings'
+            from sync_pvt_settings import *
+            setting = 'sync_pvt_settings'
 
         if not 'DJANGO_SETTINGS_MODULE' in os.environ:
             os.environ['DJANGO_SETTINGS_MODULE'] = setting
