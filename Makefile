@@ -19,6 +19,9 @@ run-pub:
 run-pvt:
 	@python cloud_sync.py pvt
 
+stop:
+	@cat /tmp/cloud_sync.pid|xargs kill -9
+
 travis:
 	@python travis_sync.py
 

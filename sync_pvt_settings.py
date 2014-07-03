@@ -63,7 +63,7 @@ AWS_DEFAULT_ACL='private'
 ########################################################
 #               AliYun OSS SETTINGS                    #           
 ########################################################
-OSS_ACCESS_URL='oss-cn-hangzhou.aliyuncs.com'
+OSS_ACCESS_URL='oss-cn-qingdao-a.aliyuncs.com'
 OSS_ACCESS_KEY_ID=os.environ.get('OSS_ACCESS_KEY_ID', None)
 OSS_SECRET_ACCESS_KEY=os.environ.get('OSS_SECRET_ACCESS_KEY', None)
 OSS_QUERYSTRING_EXPIRE = 60*60*24*365*10
@@ -73,7 +73,7 @@ OSS_HEADERS = {
         }
 
 """ The `private/public` bucket name """
-OSS_STORAGE_BUCKET_NAME = 'cogenda-pvt'
+OSS_STORAGE_BUCKET_NAME = 'cogenda-pvt-qd'
 """The minimum part size(byte) (if there is more than one part). This value must be >= 5M """
 OSS_FILE_BUFFER_SIZE=5*1024*1024
 
