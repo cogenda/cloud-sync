@@ -335,13 +335,6 @@ class CloudSync(threading.Thread):
             # Commit the result to the database.            
             transported_file_basename = os.path.basename(output_file)
             if event == FSMonitor.CREATED:
-                """ Sync file resource with cogenda web server """
-                if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
-                    result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
-                    if not result:
-                        self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
-                        continue
-
                 try:
                     self.dbcur.execute("INSERT INTO synced_files VALUES(?, ?, ?, ?)", (input_file, transported_file_basename, url, server))
                     self.dbcon.commit()
@@ -349,12 +342,6 @@ class CloudSync(threading.Thread):
                     self.logger.critical("Database integrity error: %s. Duplicate key: input_file = '%s', server = '%s'." % (e, input_file, server))
 
             elif event == FSMonitor.MODIFIED:
-                if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
-                    result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
-                    if not result:
-                        self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
-                        continue
-
                 self.dbcur.execute("SELECT COUNT(*) FROM synced_files WHERE input_file=? AND server=?", (input_file, server))
                 if self.dbcur.fetchone()[0] > 0:
                     # Look up the transported file's base name. This
@@ -370,19 +357,32 @@ class CloudSync(threading.Thread):
                     self.dbcur.execute("INSERT INTO synced_files VALUES(?, ?, ?, ?)", (input_file, transported_file_basename, url, server))
                     self.dbcon.commit()
             elif event == FSMonitor.DELETED:
-                if OSS_DEFAULT_ACL == 'private' or AWS_DEFAULT_ACL == 'private': 
-                    result = syncHelper.destroy_resource(transported_file_basename, server)
-                    if not result:
-                        self.logger.critical('Failed to delete resource with cogenda server filename: [%s] vendor: [%s]' %(transported_file_basename, server))
-                        continue
-
                 self.dbcur.execute("DELETE FROM synced_files WHERE input_file=? AND server=?", (input_file, server))
                 self.dbcon.commit()
             else:
                 raise Exception("Non-existing event set.")
-
             self.logger.debug("DB queue -> 'synced files' DB: '%s' (URL: '%s')." % (input_file, url))
+
+            self.__sync_congenda(event, transported_file_basename, url, server)
         processed += 1
+
+
+    def __sync_congenda(self, event, transported_file_basename, url, server):
+        """ Sync with cogenda web server """
+        if OSS_DEFAULT_ACL != 'private' or AWS_DEFAULT_ACL != 'private': 
+            return
+        if event == FSMonitor.CREATED or event == FSMonitor.MODIFIED:
+            result = syncHelper.sync_resource(transported_file_basename, url, '1', server)
+            if not result:
+                self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
+
+        elif event == FSMonitor.DELETED:
+            result = syncHelper.destroy_resource(transported_file_basename, server)
+            if not result:
+                self.logger.critical('Failed to destory resource with cogenda server filename: [%s] vendor: [%s]' %(transported_file_basename, server))
+        else:
+            raise Exception("Non-existing event set.")
+        self.logger.debug("Sync cogenda -> 'synced file with cogenda web server' file: '%s' (URL: '%s')." % (input_file, url))
 
 
     def __get_transporter(self, server):

@@ -84,9 +84,9 @@ OSS_DEFAULT_ACL = 'private'
 ########################################################
 #                 USER SETTINGS                        #           
 ########################################################
-COGENDA_MEDIA_HOME=unicode(os.environ.get('COGENDA_MEDIA_HOME', None), 'utf-8')
+COGENDA_DOWNLOADS_HOME=unicode(os.environ.get('COGENDA_DOWNLOADS_HOME', None), 'utf-8')
 SCAN_PATHS={
-        COGENDA_MEDIA_HOME: 'resource',
+        COGENDA_DOWNLOADS_HOME: 'downloads',
         }
 IGNORE_PATHS=[]
 TRANSPORTERS=['s3', 'oss']
