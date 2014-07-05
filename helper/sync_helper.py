@@ -13,6 +13,14 @@ import hashlib
 class SyncHelperError(Exception): pass
 
 class SyncHelper(object):
+    
+    PUBLIC_PUBLICATION='public/publication'
+    PUBLIC_DOCUMENTATION='public/documentation'
+    PUBLIC_EXAMPLES='public/examples'
+    ALL_USER_INSTALLER='alluser/installer'
+    ALL_USER_PKG='alluser/software-pkg'
+    PRIVATE='private/'
+
 
     def __init__(self, 
             cogenda_shared_secret='cogenda-ws-secret', 
@@ -25,13 +33,14 @@ class SyncHelper(object):
         self.api_destroy_resource = api_destroy_resource
 
 
-    def sync_resource(self, filename, url, server, desc, type):
+    def sync_resource(self, filename, url, server, transported_file):
+        type = self._filter_resource_type(transported_file)
         payload = json.dumps({
             'filename': filename, 
             'url': url, 
             'server': server, 
             'type': type,
-            'desc': desc
+            'desc': ''
             })
         auth_token = self._make_hamc_key(payload)
         headers = {'content-type': 'application/json', 'Authorization': auth_token}
@@ -56,6 +65,22 @@ class SyncHelper(object):
         auth_token = base64.b64encode(hmac.new(self.cogenda_shared_secret, message, digestmod=hashlib.sha256).digest())
         return auth_token
 
+
+    def _filter_resource_type(self, transported_file):
+        if SyncHelper.PUBLIC_PUBLICATION in transported_file:
+            return 1
+        elif SyncHelper.PUBLIC_DOCUMENTATION in transported_file: 
+            return 2
+        elif SyncHelper.PUBLIC_EXAMPLES in transported_file:
+            return 3
+        elif SyncHelper.ALL_USER_INSTALLER in transported_file: 
+            return 4
+        elif SyncHelper.ALL_USER_PKG in transported_file:
+            return 5
+        elif SyncHelper.PRIVATE in transported_file:
+            return 6
+        else:
+            raise Exception("Invalide downloads dir structure.")
 
 if __name__ == '__main__':
 

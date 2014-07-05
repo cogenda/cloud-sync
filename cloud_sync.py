@@ -372,8 +372,7 @@ class CloudSync(threading.Thread):
         if OSS_DEFAULT_ACL != 'private' or AWS_DEFAULT_ACL != 'private':
             return
         if event == FSMonitor.CREATED or event == FSMonitor.MODIFIED:
-            resource_type = self.__filter_resource_type(transported_file)
-            result = syncHelper.sync_resource(transported_file_basename, url, server, '', resource_type)
+            result = syncHelper.sync_resource(transported_file_basename, url, server, transported_file)
             if not result:
                 self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
             else:
@@ -387,23 +386,6 @@ class CloudSync(threading.Thread):
         else:
             raise Exception("Non-existing event set.")
         self.logger.debug("Sync cogenda -> 'synced file with cogenda web server' file: '%s' (URL: '%s')." % (transported_file, url))
-
-
-    def __filter_resource_type(self, transported_file):
-        if 'public/publication' in transported_file:
-            return 1
-        elif 'public/documentation' in transported_file: 
-            return 2
-        elif 'public/examples' in transported_file:
-            return 3
-        elif 'alluser/installer' in transported_file: 
-            return 4
-        elif 'alluser/software-pkg' in transported_file:
-            return 5
-        elif 'private/' in transported_file:
-            return 6
-        else:
-            raise Exception("Invalide downloads dir structure.")
 
 
 
