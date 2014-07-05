@@ -376,10 +376,14 @@ class CloudSync(threading.Thread):
             result = syncHelper.sync_resource(transported_file_basename, url, server, '', resource_type)
             if not result:
                 self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
+            else:
+                self.logger.info('Success to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
         elif event == FSMonitor.DELETED:
             result = syncHelper.destroy_resource(transported_file_basename, server)
             if not result:
                 self.logger.critical('Failed to destory resource with cogenda server filename: [%s] vendor: [%s]' %(transported_file_basename, server))
+            else:
+                self.logger.info('Success to destroy resource with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
         else:
             raise Exception("Non-existing event set.")
         self.logger.debug("Sync cogenda -> 'synced file with cogenda web server' file: '%s' (URL: '%s')." % (transported_file, url))
