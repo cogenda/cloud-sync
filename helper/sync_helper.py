@@ -25,11 +25,10 @@ class SyncHelper(object):
         self.api_destroy_resource = api_destroy_resource
 
 
-    def sync_resource(self, filename, url, server, desc, type, status='1'):
+    def sync_resource(self, filename, url, server, desc, type):
         payload = json.dumps({
             'filename': filename, 
             'url': url, 
-            'status': status, 
             'server': server, 
             'type': type,
             'desc': desc
