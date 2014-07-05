@@ -25,8 +25,15 @@ class SyncHelper(object):
         self.api_destroy_resource = api_destroy_resource
 
 
-    def sync_resource(self, filename, url, status, server):
-        payload = json.dumps({'filename': filename, 'url': url, 'status': status, 'server': server, 'type': '0'})
+    def sync_resource(self, filename, url, server, desc, type, status='1'):
+        payload = json.dumps({
+            'filename': filename, 
+            'url': url, 
+            'status': status, 
+            'server': server, 
+            'type': type,
+            'desc': desc
+            })
         auth_token = self._make_hamc_key(payload)
         headers = {'content-type': 'application/json', 'Authorization': auth_token}
         response = requests.post('%s%s' %(self.ws_host, self.api_modify_resource), data=payload, headers=headers)
@@ -58,9 +65,9 @@ if __name__ == '__main__':
     API_DESTROY_RESOURCE='/api/destroy-resource'
 
     syncHelper = SyncHelper(ws_host=WS_HOST, 
-        cogenda_shared_secret='cogenda-ws-secret', 
-        api_modify_resource=API_MODIFY_RESOURCE, 
-        api_destroy_resource=API_DESTROY_RESOURCE)
+            cogenda_shared_secret='cogenda-ws-secret', 
+            api_modify_resource=API_MODIFY_RESOURCE, 
+            api_destroy_resource=API_DESTROY_RESOURCE)
 
     print syncHelper.sync_resource('xxxxxx', 'http://test.com/xx.png', '1', 'oss')
     print syncHelper.destroy_resource('xxxxxx', 'oss')
