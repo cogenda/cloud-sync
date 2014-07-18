@@ -1,13 +1,13 @@
 # Makefile for cogenda cloud sync 
-#
 
 .PHONY: help
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo ""
-	@echo "  run-public       to run cloud sync service"
-	@echo "  run-private      to clean db files and restart sync service"
-	@echo "  verify           to verify synced files valid or not"
+	@echo "  run-pub       to sync public files with cloud sync service"
+	@echo "  run-pvt       to sync private files with cloud sync service"
+	@echo "  stop          to shutdown cloud sync service"
+	@echo "  verify        to verify synced files is missing"
 	@echo ""
 
 
