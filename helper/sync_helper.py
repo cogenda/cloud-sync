@@ -35,14 +35,15 @@ class SyncHelper(object):
 
     def sync_resource(self, filename, url, server, transported_file):
         type = self._filter_resource_type(transported_file)
-        payload = json.dumps({
+        payload = json.dumps({'json': {
             'filename': filename, 
             'url': url, 
             'server': server, 
             'type': type,
             'desc': ''
-            })
+            }})
         auth_token = self._make_hamc_key(payload)
+        print auth_token
         headers = {'content-type': 'application/json', 'Authorization': auth_token}
         response = requests.post('%s%s' %(self.ws_host, self.api_modify_resource), data=payload, headers=headers)
         if response.status_code != 200:
@@ -51,7 +52,7 @@ class SyncHelper(object):
 
 
     def destroy_resource(self, filename, server):
-        payload = json.dumps({'filename': filename, 'server': server})
+        payload = json.dumps({'json': {'filename': filename, 'server': server}})
         auth_token = self._make_hamc_key(payload)
         headers = {'content-type': 'application/json', 'Authorization': auth_token}
         response = requests.post('%s%s' %(self.ws_host, self.api_destroy_resource), data=payload, headers=headers)
@@ -93,5 +94,5 @@ if __name__ == '__main__':
             api_modify_resource=API_MODIFY_RESOURCE, 
             api_destroy_resource=API_DESTROY_RESOURCE)
 
-    print syncHelper.sync_resource('xxxxxx', 'http://test.com/xx.png', '1', 'oss')
+    print syncHelper.sync_resource('xxxxxx', 'http://test.com/xx.png', 'oss', SyncHelper.PUBLIC_PUBLICATION)
     print syncHelper.destroy_resource('xxxxxx', 'oss')
