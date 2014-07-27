@@ -598,10 +598,10 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
         setting = None
         if sys.argv[1] == 'pub':
-            from sync_pub_settings import *
+            from .sync_pub_settings import *
             setting = 'sync_pub_settings'
         else:
-            from sync_pvt_settings import *
+            from .sync_pvt_settings import *
             setting = 'sync_pvt_settings'
 
         if not 'DJANGO_SETTINGS_MODULE' in os.environ:
@@ -617,7 +617,7 @@ if __name__ == '__main__':
         # by the user in the console. See DaemonThreadRunner.handle_signal()
         # for details.
         while True and not DaemonThreadRunner.stopped_in_console:
-            # Make sure there's always a PID file, even when File Conveyor
+            # Make sure there's always a PID file, even when Cloud Sync 
             # technically isn't running.
             DaemonThreadRunner.write_pid_file(os.path.expanduser(PID_FILE))
             time.sleep(RESTART_INTERVAL)
