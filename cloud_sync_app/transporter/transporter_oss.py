@@ -1,19 +1,20 @@
 # -*- coding:utf-8 -*-
 
-""" AWS S3 transporter """
+""" AliYun OSS transporter """
 
-from transporter import *
-from storages.backends.s3boto import S3BotoStorage
+from .transporter import *
+from ..aliyun_oss.backends.oss import *
 
-TRANSPORTER_CLASS = "TransporterS3"
+TRANSPORTER_CLASS = "TransporterOSS"
 
-class TransporterS3(Transporter):
+class TransporterOSS(Transporter):
 
-    name = 'S3'
+    name='OSS'
 
     def __init__(self, callback, error_callback, parent_logger=None):
         Transporter.__init__(self, callback, error_callback, parent_logger)
         try:
-            self.storage = S3BotoStorage()
+            self.storage = OSSStorage()
         except Exception, e:            
             raise ConnectionError(e)
+

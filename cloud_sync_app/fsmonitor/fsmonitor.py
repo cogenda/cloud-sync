@@ -9,7 +9,7 @@ import threading
 import Queue
 import os
 import logging
-from scanner.path_scanner import PathScanner
+from ..scanner.path_scanner import PathScanner
 
 
 # Define exceptions.

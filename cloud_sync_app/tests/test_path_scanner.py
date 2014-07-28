@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from scanner.path_scanner import PathScanner
+from ..scanner.path_scanner import PathScanner
 import sqlite3
 from sets import Set
 

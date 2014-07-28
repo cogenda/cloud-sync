@@ -67,8 +67,8 @@ OSS_ACCESS_KEY_ID=os.environ.get('OSS_ACCESS_KEY_ID', None)
 OSS_SECRET_ACCESS_KEY=os.environ.get('OSS_SECRET_ACCESS_KEY', None)
 OSS_QUERYSTRING_EXPIRE = 60*60*24*365*10
 OSS_HEADERS = {
-        'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT', 
-        'Cache-Control': 'max-age=31536000', 
+        'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT',
+        'Cache-Control': 'max-age=31536000',
         }
 
 """ The `private/public` bucket name """
@@ -88,4 +88,4 @@ SCAN_PATHS={
         COGENDA_STATIC_HOME: 'static',
         }
 IGNORE_PATHS=[]
-TRANSPORTERS=['s3', 'oss']
+TRANSPORTERS=['oss', 's3']

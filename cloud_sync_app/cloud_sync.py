@@ -13,12 +13,12 @@ from UserList import UserList
 import os.path
 import signal
 
-from persistent.persistent_list import *
-from persistent.persistent_queue import *
-from fsmonitor.fsmonitor import *
-from helper.sync_helper import SyncHelper
-from transporter.transporter import Transporter, ConnectionError
-from daemon_thread_runner import *
+from .persistent.persistent_list import *
+from .persistent.persistent_queue import *
+from .fsmonitor.fsmonitor import *
+from .helper.sync_helper import SyncHelper
+from .transporter.transporter import Transporter, ConnectionError
+from .daemon_thread_runner import *
 
 
 # Define exceptions.
@@ -459,6 +459,8 @@ class CloudSync(threading.Thread):
             try:
                 module = __import__(module_name, globals(), locals(), ["TRANSPORTER_CLASS"], -1)
             except ImportError:
+                import traceback
+                traceback.print_exc()
                 pass
 
         if not module:

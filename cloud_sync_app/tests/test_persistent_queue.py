@@ -2,7 +2,7 @@
 
 """Unit test for persistent_queue.py"""
 
-from persistent.persistent_queue import *
+from ..persistent.persistent_queue import *
 import os
 import os.path
 import unittest

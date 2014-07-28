@@ -11,7 +11,7 @@
 *.pid
 
 __pycache__
-build
+/build
 develop-eggs
 eggs
 parts
@@ -24,6 +24,7 @@ parts
 data/
 venv/
 cover/
+/dist/
 
 .externalToolBuilders
 .settings

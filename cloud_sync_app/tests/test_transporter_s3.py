@@ -7,7 +7,7 @@ import os.path
 if not 'DJANGO_SETTINGS_MODULE' in os.environ:
     os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_settings'
 
-from transporter.transporter_oss import *
+from ..transporter.transporter_s3 import *
 
 if __name__ == "__main__":
     # Set up logger.
@@ -33,15 +33,15 @@ if __name__ == "__main__":
                     action=%d""" % (src, dst, action)
 
 
-    # AliYun OSS
+    # Amazon S3
     try:
-        oss = TransporterOSS(callback, error_callback,'Test')
+        s3 = TransporterS3(callback, error_callback,'Test')
     except ConnectionError, e:
         print "Error occurred in TransporterS3:", e
     else:
-        oss.start()
-        oss.sync_file('/home/jiltang/apache-ant-1.9.4-bin.zip')
-        #oss.sync_file('/home/jiltang/Koala.jpg', '/home/jiltang/Koala.jpg', Transporter.DELETE)
+        s3.start()
+        s3.sync_file('/Users/tim-tang/Desktop/arctic-wolf.jpg')
+        s3.sync_file('/Users/tim-tang/Desktop/logo.jpg')
+        s3.sync_file("/Users/tim-tang/Desktop/arctic-wolf.jpg", "/Users/tim-tang/Desktop/arctic-wolf.jpg", Transporter.DELETE)
         time.sleep(5)
-        oss.stop() 
-
+        s3.stop() 

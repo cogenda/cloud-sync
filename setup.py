@@ -2,9 +2,10 @@
 
 from setuptools import setup, find_packages
 
+kwargs = {}
 install_requires = [
     'django',
-    'django-storages'
+    'django-storages',
     'boto',
     'requests'
 ]
@@ -15,13 +16,9 @@ setup(
     author='cogenda-dev-team',
     author_email='support@cogenda.com',
     url='http://cogenda.com',
-    packages=find_packages(exclude=['tests', 'test_*']), 
+    packages=find_packages(exclude=['tests', 'tests.*']), 
     install_requires=install_requires,
     zip_safe=False,
     include_package_data=True,
     **kwargs
 )
-
-
-
-

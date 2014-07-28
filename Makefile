@@ -13,11 +13,13 @@ help:
 
 .PHONY: run-pub
 run-pub: 
-	@python cloud_sync.py pub
+	#@python cloud_sync.py pub
+	@python -m cloud_sync_app.cloud_sync pub
 
 .PHONY: run-pvt
 run-pvt:
-	@python cloud_sync.py pvt
+	#@python cloud_sync.py pvt
+	@python -m cloud_sync_app.cloud_sync pvt
 
 stop:
 	@cat /tmp/cloud_sync.pid|xargs kill -9

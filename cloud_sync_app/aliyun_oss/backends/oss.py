@@ -12,8 +12,8 @@ from django.core.files.base import File
 from django.core.files.storage import Storage
 from django.core.exceptions import ImproperlyConfigured
 
-from aliyun_oss.oss.oss_api import OssAPI
-from aliyun_oss.oss.oss_util import convert_header2map, safe_get_element
+from ..oss.oss_api import OssAPI
+from ..oss.oss_util import convert_header2map, safe_get_element
 
 ACCESS_ADDRESS          = getattr(settings, 'OSS_ACCESS_URL', 'oss.aliyuncs.com')
 ACCESS_KEY_NAME     = getattr(settings, 'OSS_ACCESS_KEY_ID')
