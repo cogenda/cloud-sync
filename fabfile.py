@@ -62,6 +62,7 @@ def install_app():
     with cd('~/tmp/%s' % dist):
         run('cp -f ~/tmp/%s/cloud_sync_app/sync_pub_settings.py %s' % (dist, CLOUD_SYNC_HOME))
         run('cp -f ~/tmp/%s/cloud_sync_app/sync_pvt_settings.py %s' % (dist, CLOUD_SYNC_HOME))
+        run('rm -f %s/*.pyc' % CLOUD_SYNC_HOME)
         run('%s/venv/bin/python setup.py install' % CLOUD_SYNC_HOME)
     print(red("Auto install cloud sync service succeed!"))
 
@@ -70,6 +71,7 @@ def restart_app():
         #run("cat /tmp/cloud_sync.pid | xargs kill -9")
         run("ps -ef | grep 'cloud_sync' | grep -v 'grep' | awk '{print $2}' | xargs kill -9")
         run("python -m cloud_sync_app.cloud_sync pub &")
+        run('ps -ef | grep 'cloud_sync'')
     print(red("Restart Cloud Sync Service Succeed!"))
 
 def clean():
