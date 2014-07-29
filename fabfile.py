@@ -70,10 +70,12 @@ def install_app():
     print(red("Auto install cloud sync service succeed!"))
 
 def restart_app():
+    if not exists("/usr/bin/dtach"):
+        sudo("apt-get install dtach")
     with virtualenv():
         #run("cat /tmp/cloud_sync.pid | xargs kill -9")
         run("ps -ef | grep 'cloud_sync' | grep -v 'grep' | awk '{print $2}' | xargs kill -9")
-        run("nohup python -m cloud_sync_app.cloud_sync pub >& /dev/null < /dev/null &", pty=False)
+        run("dtach -n `mktemp -u /tmp/dtach.XXXX` python -m cloud_sync_app.cloud_sync pub", pty=False)
     print(red("Restart Cloud Sync Service Succeed!"))
 
 def clean():
