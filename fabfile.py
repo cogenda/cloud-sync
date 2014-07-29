@@ -47,7 +47,8 @@ def tarball():
 def upload_dist():
     """Upload tarball to the production server."""
     dist = local('python setup.py --fullname', capture=True).strip()
-    run('mkdir -p ~/tmp')
+    if not exists('~/tmp'):
+        run('mkdir -p ~/tmp')
     put('dist/%s.tar.gz' % dist, '~/tmp/cloud-sync.tar.gz')
     with cd('~/tmp'):
         run('tar xzf ~/tmp/cloud-sync.tar.gz')
@@ -78,4 +79,5 @@ def clean():
     """Clean packages on server."""
     dist = local('python setup.py --fullname', capture=True).strip()
     run('rm -rf ~/tmp/%s' % dist)
+    print(red("Auto Housekeeping succeed!"))
 

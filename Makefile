@@ -26,7 +26,7 @@ verify:
 	@python -m cloud_sync_app.verify
 
 deploy:
-	@fab prepare tarball upload_dist install_venv install_app restart_app
+	@fab prepare tarball upload_dist install_venv install_app restart_app clean
 
 clean-pyc:
 	@find . -name '*.pyc' -exec rm -f {} +
