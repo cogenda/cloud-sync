@@ -64,7 +64,7 @@ def install_app():
         run('cp -f ~/tmp/%s/cloud_sync_app/sync_pub_settings.py %s' % (dist, CLOUD_SYNC_HOME))
         run('cp -f ~/tmp/%s/cloud_sync_app/sync_pvt_settings.py %s' % (dist, CLOUD_SYNC_HOME))
         run('cp -f ~/tmp/%s/cloud_sync_app/bootstrap.sh %s' % (dist, CLOUD_SYNC_HOME))
-        run('cp -f ~/tmp/%s/cloud_sync_app/Makefile %s' % (dist, CLOUD_SYNC_HOME))
+        run('cp -f ~/tmp/%s/Makefile %s' % (dist, CLOUD_SYNC_HOME))
         run('rm -f %s/*.pyc' % CLOUD_SYNC_HOME)
         run('%s/venv/bin/python setup.py install' % CLOUD_SYNC_HOME)
     print(red("Auto install cloud sync service succeed!"))
