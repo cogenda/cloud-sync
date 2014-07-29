@@ -71,7 +71,7 @@ def restart_app():
         #run("cat /tmp/cloud_sync.pid | xargs kill -9")
         run("ps -ef | grep 'cloud_sync' | grep -v 'grep' | awk '{print $2}' | xargs kill -9")
         run("python -m cloud_sync_app.cloud_sync pub &")
-        run('ps -ef | grep 'cloud_sync'')
+        run("ps -ef | grep 'cloud_sync'")
     print(red("Restart Cloud Sync Service Succeed!"))
 
 def clean():
