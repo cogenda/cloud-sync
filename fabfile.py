@@ -19,10 +19,14 @@ from contextlib import contextmanager as _contextmanager
 # Internal variables
 APP_PATH = "~/apps"
 CLOUD_SYNC_HOME = "%s/cloud-sync" % (APP_PATH)
-DEPLOY_USER = "tim"
-DEPLOY_HOST = "85.159.208.213"
-TRAVIS_SSH_KEY = "~/.ssh/id_rsa"
 VENV_HOME = "%s/venv" % (CLOUD_SYNC_HOME)
+ENV_ACTIVATE = "source %s/venv/bin/activate" % CLOUD_SYNC_HOME 
+
+TRAVIS_SSH_KEY = "~/.ssh/id_rsa"
+env.host_string = "85.159.208.213"
+env.user = "tim"
+env.key_filename = TRAVIS_SSH_KEY
+env.port = 22
 
 @_contextmanager
 def virtualenv():
@@ -30,19 +34,9 @@ def virtualenv():
         with prefix(ENV_ACTIVATE):
             yield
 
-def prepare():
-    """Prepare to login to production server."""
-    env.host_string = DEPLOY_HOST
-    env.user = DEPLOY_USER
-    env.key_filename = TRAVIS_SSH_KEY
-    env.port = 22
-    print(red("Login Cloud Sync Production Server Succeed!"))
-
-
 def tarball():
     """Create tarball for Cloud Sync service."""
     local('python setup.py sdist --formats=gztar', capture=False)
-
 
 def upload_dist():
     """Upload tarball to the production server."""
@@ -56,7 +50,7 @@ def upload_dist():
 def install_venv():
     if not exists(CLOUD_SYNC_HOME):
         run('mkdir -p %s' % CLOUD_SYNC_HOME)
-    if not exists(CLOUD_SYNC_HOME):
+    if not exists(VENV_HOME):
         run('virtualenv %s/venv' % CLOUD_SYNC_HOME)
     print(red("Virtualenv installation succeed!"))
 
@@ -71,7 +65,8 @@ def install_app():
 
 def restart_app():
     with virtualenv():
-        run("cat /tmp/cloud_sync.pid | xargs kill -9")
+        #run("cat /tmp/cloud_sync.pid | xargs kill -9")
+        run("ps -ef | grep 'cloud_sync' | grep -v 'grep' | awk '{print $2}' | xargs kill -9")
         run("python -m cloud_sync_app.cloud_sync pub &")
     print(red("Restart Cloud Sync Service Succeed!"))
 
