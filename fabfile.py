@@ -60,6 +60,8 @@ def install_app():
     """
     dist = local('python setup.py --fullname', capture=True).strip()
     with cd('~/tmp/%s' % dist):
+        run('cp -f sync_pub_settings.py %s' % CLOUD_SYNC_HOME)
+        run('cp -f sync_pvt_settings.py %s' % CLOUD_SYNC_HOME)
         run('%s/venv/bin/python setup.py install' % CLOUD_SYNC_HOME)
     print(red("Auto install cloud sync service succeed!"))
 
