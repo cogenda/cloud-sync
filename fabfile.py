@@ -73,7 +73,7 @@ def restart_app():
     with virtualenv():
         #run("cat /tmp/cloud_sync.pid | xargs kill -9")
         run("ps -ef | grep 'cloud_sync' | grep -v 'grep' | awk '{print $2}' | xargs kill -9")
-        run("make run-pub-prod")
+        run("nohup python -m cloud_sync_app.cloud_sync pub >& /dev/null < /dev/null &", pty=False)
     print(red("Restart Cloud Sync Service Succeed!"))
 
 def clean():

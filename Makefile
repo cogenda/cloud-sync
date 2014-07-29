@@ -16,7 +16,7 @@ run-pub:
 	@python -m cloud_sync_app.cloud_sync pub
 
 run-pub-prod: 
-	@nohup python -m cloud_sync_app.cloud_sync pub &
+	@nohup python -m cloud_sync_app.cloud_sync pub >& /dev/null < /dev/null &
 
 .PHONY: run-pvt
 run-pvt:
