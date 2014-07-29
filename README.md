@@ -7,6 +7,8 @@
         \/___/ \/____/\/___/  \/___/  \/__,_ /    \/_____/`/___/> \/_/\/_/\/____/
                                                              /\___/              
 
+[![Build Status](https://travis-ci.org/cogenda/cloud-sync.svg)](https://travis-ci.org/cogenda/cloud-sync)
+
 -----
 
 Auto upload tool for AWS S3 & AliYun OSS.
