@@ -23,7 +23,7 @@ CLOUD_SYNC_HOME = "%s/cloud-sync" % (APP_PATH)
 VENV_HOME = "%s/venv" % (CLOUD_SYNC_HOME)
 ENV_ACTIVATE = "source %s/venv/bin/activate" % CLOUD_SYNC_HOME 
 
-TRAVIS_SSH_KEY = "~/.ssh/id_rsa_deploy"
+TRAVIS_SSH_KEY = "~/.ssh/id_rsa"
 env.host_string = "85.159.208.213"
 env.user = "tim"
 env.key_filename = TRAVIS_SSH_KEY
