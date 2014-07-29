@@ -16,8 +16,7 @@ run-pub:
 	@python -m cloud_sync_app.cloud_sync pub
 
 run-pub-prod: 
-	@source ~/.bashrc
-	@python -m cloud_sync_app.cloud_sync pub
+	@nohup python -m cloud_sync_app.cloud_sync pub &
 
 .PHONY: run-pvt
 run-pvt:
