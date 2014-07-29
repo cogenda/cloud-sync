@@ -13,22 +13,20 @@ help:
 
 .PHONY: run-pub
 run-pub: 
-	#@python cloud_sync.py pub
 	@python -m cloud_sync_app.cloud_sync pub
 
 .PHONY: run-pvt
 run-pvt:
-	#@python cloud_sync.py pvt
 	@python -m cloud_sync_app.cloud_sync pvt
 
 stop:
 	@cat /tmp/cloud_sync.pid|xargs kill -9
 
-travis:
-	@python travis_sync.py
-
 verify:
-	@python verify.py
+	@python -m cloud_sync_app.verify
+
+deploy:
+	@fab prepare tarball upload_dist install_venv install_app restart_app
 
 clean-pyc:
 	@find . -name '*.pyc' -exec rm -f {} +

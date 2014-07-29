@@ -22,7 +22,7 @@ script:
 #- make test
 after_success:
 - echo 'Ready to deploy cogenda web distro to Lindo server.'
-- make deploy_dist
+- make deploy:
 branches:
   only:
   - master
