@@ -70,7 +70,7 @@ def install_app():
 
 def restart_app():
     if not exists("/usr/bin/dtach"):
-        sudo("apt-get install dtach")
+        sudo("apt-get -y install dtach")
     with virtualenv():
         #run("cat /tmp/cloud_sync.pid | xargs kill -9")
         run("ps -ef | grep 'cloud_sync' | grep -v 'grep' | awk '{print $2}' | xargs kill -9")

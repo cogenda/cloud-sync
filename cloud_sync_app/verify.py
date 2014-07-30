@@ -30,7 +30,9 @@ for input_file, url, server in dbcur.fetchall():
 
     num_files_checked += 1
 
-    sys.stdout.write("\r%3d%% (%d/%d)" % ((num_files_checked * 100.0 / num_files), num_files_checked, num_files))
+    percentage = num_files_checked * 100.0 / num_files
+    progress = '#'*int(round(percentage))
+    sys.stdout.write("\r[%s] %3d%% (%d/%d)" % (progress, percentage, num_files_checked, num_files))
     sys.stdout.flush()
 
 print ""
