@@ -31,12 +31,19 @@ for input_file, url, server in dbcur.fetchall():
     num_files_checked += 1
 
     percentage = num_files_checked * 100.0 / num_files
-    progress = '*'*int(round(percentage))
+    progress = '|'*int(round(percentage))
     spaces = ' '*(100 - len(progress))
     sys.stdout.write("\r%3d%% [%s] (%d/%d)" % (percentage, (progress + spaces), num_files_checked, num_files))
     sys.stdout.flush()
 
 print ""
-print "Finished verifying synced files. Results:"
-print " - Number of checked synced files: %d" % (num_files_checked)
-print " - Number of invalid synced files: %d" % (num_files_invalid)
+print "//" + "-"*28
+caption = "Synced Files Records"
+syced_files = "SYNCED FILES NUM => [%d]" % (num_files_checked)
+failed_files = "FAILED FILES NUM => [%d]" % (num_files_invalid)
+print "// "+ caption + " "*20 
+print "//" + "-"*28 
+print "// "+ syced_files 
+print "//" + "-"*28
+print "// "+ failed_files 
+print "//" + "-"*28
