@@ -23,7 +23,7 @@ stop:
 	@cat /tmp/cloud_sync.pid|xargs kill -9
 
 verify:
-	@python -m cloud_sync_app.verify
+	@./venv/bin/python -m cloud_sync_app.verify
 
 deploy:
 	@fab tarball upload_dist install_venv install_app restart_app clean
