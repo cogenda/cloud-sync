@@ -9,8 +9,8 @@ import sys
 from .sync_pub_settings import *
 import Queue
 import threading
-import time
 from thread import allocate_lock
+import signal
 
 
 dbcon = sqlite3.connect(SYNCED_FILES_DB)
@@ -64,16 +64,16 @@ def display_progress(progress_queue):
 
 def print_results():
     print "\n"
-    print "//" + "-"*28
+    print "#" + "-"*28
     caption = "SYNCED FILES RECORDS"
     syced_files = "SYNCED FILES NUM => [%d]" % (num_files_checked)
     failed_files = "FAILED FILES NUM => [%d]" % (num_files_invalid)
-    print "// "+ caption + " "*20 
-    print "//" + "-"*28 
-    print "// "+ syced_files 
-    print "//" + "-"*28
-    print "// "+ failed_files 
-    print "//" + "-"*28
+    print "# "+ caption + " "*20 
+    print "#" + "-"*28 
+    print "# "+ syced_files 
+    print "#" + "-"*28
+    print "# "+ failed_files 
+    print "#" + "-"*28
 
 
 
@@ -83,18 +83,19 @@ if __name__ == '__main__':
     for input_file, url, server in dbcur.fetchall():
         url_queue.put(url)
 
-    for idx in range(WORKER_NUM):
-        crawler = threading.Thread(target=worker, args = (url_queue,)) 
-        crawler.start()
-        threads.append(crawler)
+    try:
+        for idx in range(WORKER_NUM):
+            crawler = threading.Thread(target=worker, args = (url_queue,)) 
+            crawler.start()
+            threads.append(crawler)
 
-    progress_bar = threading.Thread(target=display_progress, args =(progress_queue,))
-    progress_bar.setDaemon(True)
-    progress_bar.start() 
-    threads.append(progress_bar)
-
-    for thread in threads:
-        thread.join()
+        progress_bar = threading.Thread(target=display_progress, args =(progress_queue,))
+        progress_bar.setDaemon(True)
+        progress_bar.start() 
+        threads.append(progress_bar)
+        for thread in threads:
+            thread.join()
+    except KeyboardInterrupt, Exception:
+        os.kill(os.getpid(), signal.SIGTERM)
 
     print_results()
-
