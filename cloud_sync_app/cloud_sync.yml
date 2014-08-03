@@ -41,11 +41,11 @@ AWS_HEADERS : {
 # The `private/public` bucket name
 AWS_STORAGE_BUCKET_NAME: 'cogenda'
 # `True` for priavte file, `False` for public file
-AWS_QUERYSTRING_AUTH: False
+#AWS_QUERYSTRING_AUTH: False
 #AWS_QUERYSTRING_AUTH: True 
 
 # `private` for private file, `public-read` for public file
-AWS_DEFAULT_ACL: 'public-read'
+#AWS_DEFAULT_ACL: 'public-read'
 #AWS_DEFAULT_ACL: 'private'
 
 ########################################################
@@ -66,7 +66,7 @@ OSS_STORAGE_BUCKET_NAME: 'cogenda-qd'
 OSS_FILE_BUFFER_SIZE: 5*1024*1024
 
 # `private` for private file, `public-read` for public file
-OSS_DEFAULT_ACL: 'public-read'
+#OSS_DEFAULT_ACL: 'public-read'
 #OSS_DEFAULT_ACL: 'private'
 
 
