@@ -89,7 +89,7 @@ class CloudSync(threading.Thread):
             if not transporter_class:
                 transporters_not_found += 1
         if transporters_not_found > 0:
-            raise TransporterAvailabilityTestError("Consult the log file for details")
+            raise TransporterAvailabilityTestError("Transporter not found, consult the log file for details")
 
     def __setup(self):
         # Create transporter (cfr. worker thread) pools for each server.
@@ -172,7 +172,6 @@ class CloudSync(threading.Thread):
         self.logger.info("Final sync of discover queue to pipeline queue made.")
 
         # Stop the transporters and wait for their threads to end.
-        # Stop the transporters and wait for their threads to end.
         for server in TRANSPORTERS:
             if len(self.transporters[server]):
                 for transporter in self.transporters[server]:
@@ -183,7 +182,7 @@ class CloudSync(threading.Thread):
         # Log information about the synced files DB.
         self.dbcur.execute("SELECT COUNT(input_file) FROM synced_files")
         num_synced_files = self.dbcur.fetchone()[0]
-        self.logger.warning("synced files DB contains metadata for %d synced files." % (num_synced_files))
+        self.logger.warning("Synced files DB contains metadata for [%d] synced files." % (num_synced_files))
 
 
         # Final message, then remove all loggers.
