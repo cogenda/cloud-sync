@@ -5,8 +5,6 @@ import sys
 import time
 from ..persistent.persistent_list import *
 
-""" TODO: configuration """
-
 class RetryHandler(object):
 
     def __init__(self, settings, logger, lock):

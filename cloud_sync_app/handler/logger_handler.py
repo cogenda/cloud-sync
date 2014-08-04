@@ -24,7 +24,7 @@ class LoggerHandler(object):
             self.logger.removeHandler(self.logger.handlers[0])
         logging.shutdown()
 
-    def _filter_logging_level(level):
+    def _filter_logging_level(self, level):
         if level == 'INFO':
             return logging.INFO
         if level == 'DEBUG':

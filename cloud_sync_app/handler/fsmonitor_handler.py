@@ -18,7 +18,7 @@ class FSMonitorHandler(object):
         self.discover_queue  = Queue.Queue()
         # Initialize the FSMonitor.
         fsmonitor_class = get_fsmonitor()
-        self.fsmonitor = fsmonitor_class(self._fsmonitor_callback, True, True, self.settings.IGNORE_PATHS, self.settings.FSMONITOR_DB, "CloudSync")
+        self.fsmonitor = fsmonitor_class(self._fsmonitor_callback, True, True, self.settings['IGNORE_PATHS'], self.settings['FSMONITOR_DB'], "CloudSync")
 
         # Monitor all sources' scan paths.
         for source in self.settings['SCAN_PATHS'].keys(): 

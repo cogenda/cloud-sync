@@ -49,9 +49,9 @@ class TransporterHandler(object):
 
 
     def process_transport_queue(self):
-        for server in self.settings.TRANSPORTERS:
+        for server in self.settings['TRANSPORTERS']:
             processed = 0 
-            while processed < self.settings.QUEUE_PROCESS_BATCH_SIZE and self.transport_queue[server].qsize() > 0:
+            while processed < self.settings['QUEUE_PROCESS_BATCH_SIZE'] and self.transport_queue[server].qsize() > 0:
                 # Peek at the first item from the queue. We cannot get the
                 # item from the queue, because there may be no transporter
                 # available, in which case the file should remain queued.
@@ -202,7 +202,7 @@ class TransporterHandler(object):
         output_file      = src
         transported_file = dst
 
-        if CALLBACKS_CONSOLE_OUTPUT:
+        if self.settings['CALLBACKS_CONSOLE_OUTPUT']:
             print """TRANSPORTER CALLBACK FIRED:
                     (curried): input_file='%s'
                     (curried): event=%d
@@ -220,7 +220,7 @@ class TransporterHandler(object):
 
 
     def _transporter_error_callback(self, src, dst, action, input_file, event):
-        if CALLBACKS_CONSOLE_OUTPUT:
+        if self.settings['CALLBACKS_CONSOLE_OUTPUT']:
             print """TRANSPORTER ERROR CALLBACK FIRED:
                     (curried): input_file='%s'
                     (curried): event=%d""" % (input_file, event)
