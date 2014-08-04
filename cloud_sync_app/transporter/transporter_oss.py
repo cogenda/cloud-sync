@@ -17,4 +17,3 @@ class TransporterOSS(Transporter):
             self.storage = OSSStorage()
         except Exception, e:            
             raise ConnectionError(e)
-

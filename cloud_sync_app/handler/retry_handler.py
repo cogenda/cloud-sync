@@ -15,7 +15,6 @@ class RetryHandler(object):
         self.logger = logger
         self.last_retry = 0
 
-
     def setup_retry(self, transport_queue):
         self.failed_files = PersistentList("failed_files_list", PERSISTENT_DATA_DB)
         # TODO: failed files to combine
@@ -24,7 +23,7 @@ class RetryHandler(object):
         self.retry_queue = Queue.Queue()
         self.transport_queue = transport_queue
 
-    def __process_retry_queue(self):
+    def process_retry_queue(self):
         processed = 0
 
         while processed < QUEUE_PROCESS_BATCH_SIZE and self.retry_queue.qsize() > 0:

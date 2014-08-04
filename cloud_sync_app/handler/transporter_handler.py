@@ -16,10 +16,9 @@ class TransporterHandler(object):
 
     DELETE_OLD_FILE = 0xFFFFFFFF
 
-    def __init__(self, settings, logger, db_queue, lock):
+    def __init__(self, settings, logger, lock):
         self.logger = logger
         self.settings = settings
-        self.db_queue = db_queue
         self.lock = lock
         for transporter in settings.TRANSPORTERS:
             transporter_class = self._import_transporter(transporter)
@@ -28,7 +27,8 @@ class TransporterHandler(object):
         if transporters_not_found > 0:
             raise TransporterAvailabilityTestError("Transport not found, consult the log file for details")
 
-    def setup_trasporters(self):
+    def setup_transporters(self, db_queue):
+        self.db_queue = db_queue
         self.transporters = {}
         for server in TRANSPORTERS:
             self.transporters[server] = []
@@ -36,6 +36,7 @@ class TransporterHandler(object):
         self.transport_queue = {}
         for server in TRANSPORTERS:
             self.transport_queue[server] = AdvancedQueue()
+        return self.transport_queue  
 
     def shutdown(self):
         # Stop the transporters and wait for their threads to end.
@@ -47,7 +48,7 @@ class TransporterHandler(object):
                 self.logger.warning("Stopped transporters for the '%s' server." % (server))
 
 
-    def process_transport_queues(self):
+    def process_transport_queue(self):
         for server in self.settings.TRANSPORTERS:
             processed = 0 
             while processed < self.settings.QUEUE_PROCESS_BATCH_SIZE and self.transport_queue[server].qsize() > 0:
@@ -227,7 +228,7 @@ class TransporterHandler(object):
         self.retry_queue.put((input_file, event))
 
 
-    def __calculate_transporter_dst(self, src, relative_paths=[]):
+    def _calculate_transporter_dst(self, src, relative_paths=[]):
         dst = src
         parent_path=None
 

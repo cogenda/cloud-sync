@@ -7,9 +7,10 @@ from ..helper.sync_helper import SyncHelper
 
 class DBHandler(object):
 
-    def __init__(self, settings, logger):
+    def __init__(self, settings, logger, lock):
         self.settings = settings
         self.logger = logger
+        self.lock = lock
 
 
     def setup_db(self):
@@ -24,6 +25,7 @@ class DBHandler(object):
         self.dbcur.execute("SELECT COUNT(input_file) FROM synced_files")
         num_synced_files = self.dbcur.fetchone()[0]
         self.logger.warning("Setup: connected to the synced files DB. Contains metadata for %d previously synced files." % (num_synced_files))
+        return self.db_queue
 
     def shutdown(self):
         # Log information about the synced files DB.

@@ -8,20 +8,20 @@ from ..fsmonitor.fsmonitor import *
 
 class FSMonitorHandler(object):
 
-    def __init__(self, settings, logger, transport_queue, lock):
+    def __init__(self, settings, logger, lock):
         self.lock = lock
         self.settings = settings
         self.logger = logger
-        self.transport_queue = transport_queue
 
-    def setup_fsmonitor(self):
+    def setup_fsmonitor(self, transport_queue):
+        self.transport_queue = transport_queue
         self.discover_queue  = Queue.Queue()
         # Initialize the FSMonitor.
         fsmonitor_class = get_fsmonitor()
         self.fsmonitor = fsmonitor_class(self._fsmonitor_callback, True, True, self.settings.IGNORE_PATHS, self.settings.FSMONITOR_DB, "CloudSync")
 
         # Monitor all sources' scan paths.
-        for source in self.settings.SCAN_PATHS.keys(): 
+        for source in self.settings['SCAN_PATHS']: 
             self.logger.info("Setup: monitoring '%s'" % (source))
             self.fsmonitor.add_dir(source, FSMonitor.CREATED | FSMonitor.MODIFIED | FSMonitor.DELETED)
 
@@ -36,7 +36,7 @@ class FSMonitorHandler(object):
         # Sync the discover queue one more time: now that the FSMonitor has
         # been stopped, no more new discoveries will be made and we can safely
         # sync the last batch of discovered files.
-        self.__process_discover_queue()
+        self.process_discover_queue()
         self.logger.info("Final sync of discover queue to pipeline queue made.")
         self.logger.warning("Stopped FSMonitor.")
 
