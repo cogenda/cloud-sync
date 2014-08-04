@@ -155,7 +155,7 @@ class TransporterHandler(object):
 
         # Attempt to create an instance of the transporter.
         try:
-            transporter = transporter_class(self._transporter_callback, self._transporter_error_callback, "CloudSync")
+            transporter = transporter_class(self.settings, self._transporter_callback, self._transporter_error_callback, "CloudSync")
         except ConnectionError, e:
             self.logger.error("Could not start transporter '%s'. Error: '%s'." % (transporter_name, e))
             return False

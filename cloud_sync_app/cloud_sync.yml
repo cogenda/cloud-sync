@@ -28,47 +28,15 @@ RETRY_INTERVAL: 30
 ########################################################
 #               AWS S3 SETTINGS                        #           
 ########################################################
-AWS_ACCESS_KEY_ID: ''
-AWS_SECRET_ACCESS_KEY: ''
-AWS_QUERYSTRING_EXPIRE: 60*60*24*365*10
-# The minimum part size(byte) (if there is more than one part). This value must be >: 5M
-AWS_S3_FILE_BUFFER_SIZE: 5*1024*1024
-AWS_HEADERS : {
-    'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT',
-    'Cache-Control': 'max-age:86400',
-    'Vary': 'Accept-Encoding',
-}
 # The `private/public` bucket name
 AWS_STORAGE_BUCKET_NAME: 'cogenda'
-# `True` for priavte file, `False` for public file
-#AWS_QUERYSTRING_AUTH: False
-#AWS_QUERYSTRING_AUTH: True 
-
-# `private` for private file, `public-read` for public file
-#AWS_DEFAULT_ACL: 'public-read'
-#AWS_DEFAULT_ACL: 'private'
 
 ########################################################
 #               AliYun OSS SETTINGS                    #           
 ########################################################
-OSS_ACCESS_KEY_ID: ''
-OSS_SECRET_ACCESS_KEY: ''
 OSS_ACCESS_URL: 'oss-cn-qingdao-a.aliyuncs.com'
-OSS_QUERYSTRING_EXPIRE : 60*60*24*365*10
-OSS_HEADERS: {
-        'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT',
-        'Cache-Control': 'max-age:31536000',
-        }
-
 # The `private/public` bucket name
 OSS_STORAGE_BUCKET_NAME: 'cogenda-qd'
-# The minimum part size(byte) (if there is more than one part). This value must be >: 5M 
-OSS_FILE_BUFFER_SIZE: 5*1024*1024
-
-# `private` for private file, `public-read` for public file
-#OSS_DEFAULT_ACL: 'public-read'
-#OSS_DEFAULT_ACL: 'private'
-
 
 ########################################################
 #                 USER SETTINGS                        #           
