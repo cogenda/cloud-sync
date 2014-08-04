@@ -93,14 +93,19 @@ def run_cloud_sync(settings, restart=False)
         del cloud_sync
 
 if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        if not os.path.exists(sys.argv[1]):
+            print 'Cloud Sync configuration file [%s] not exists.' % sys.argv[1]
+            sys.exist(2)
+    else:
+        sys.exist(2)
 
     if not 'DJANGO_SETTINGS_MODULE' in os.environ:
         os.environ['DJANGO_SETTINGS_MODULE'] = 'django_storage_module'
 
-    conf = open('/home/jitang/Work/cloud-sync/cloud_sync_app/cloud_sync.yml')
+    conf = open(sys.argv[1])
     settings = yaml.load(conf)
     print settings
-    print type(settings['AWS_HEADERS'])
     conf.close()
 
     if not settings['RESTART_AFTER_UNHANDLED_EXCEPTION']:

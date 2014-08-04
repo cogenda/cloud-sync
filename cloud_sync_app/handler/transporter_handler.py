@@ -20,7 +20,7 @@ class TransporterHandler(object):
         self.logger = logger
         self.settings = settings
         self.lock = lock
-        for transporter in settings.TRANSPORTERS:
+        for transporter in settings['TRANSPORTERS']:
             transporter_class = self._import_transporter(transporter)
             if not transporter_class:
                 transporters_not_found += 1
@@ -30,17 +30,17 @@ class TransporterHandler(object):
     def setup_transporters(self, db_queue):
         self.db_queue = db_queue
         self.transporters = {}
-        for server in TRANSPORTERS:
+        for server in self.settings['TRANSPORTERS']:
             self.transporters[server] = []
             self.logger.info("Setup: created transporter pool for the '%s' server." % (server))
         self.transport_queue = {}
-        for server in TRANSPORTERS:
+        for server in self.settings['TRANSPORTERS']:
             self.transport_queue[server] = AdvancedQueue()
         return self.transport_queue  
 
     def shutdown(self):
         # Stop the transporters and wait for their threads to end.
-        for server in self.settings.TRANSPORTERS:
+        for server in self.settings['TRANSPORTERS']:
             if len(self.transporters[server]):
                 for transporter in self.transporters[server]:
                     transporter.stop()
@@ -99,7 +99,7 @@ class TransporterHandler(object):
                             )
 
                     src = output_file
-                    relative_paths = SCAN_PATHS.keys()
+                    relative_paths = self.settings['SCAN_PATHS'].keys()
                     dst = self._calculate_transporter_dst(output_file, relative_paths)
 
                     # Start the transport.
@@ -122,18 +122,18 @@ class TransporterHandler(object):
             transporter = self.transporters[server][id]
             # Don't put more than MAX_TRANSPORTER_QUEUE_SIZE files in each
             # transporter's queue.
-            if transporter.qsize() <= self.settings.MAX_TRANSPORTER_QUEUE_SIZE:
+            if transporter.qsize() <= self.settings['MAX_TRANSPORTER_QUEUE_SIZE']:
                 place_in_queue = transporter.qsize() + 1
                 return (id, place_in_queue, transporter)
 
         # Don't run more than the allowed number of simultaneous transporters.
-        if not self.transporters_running < MAX_SIMULTANEOUS_TRANSPORTERS:
+        if not self.transporters_running < self.settings['MAX_SIMULTANEOUS_TRANSPORTERS']:
             return (None, None, None)
 
         # Don't run more transporters for each server than its "maxConnections"
         # setting allows.
         num_connections = len(self.transporters[server])
-        max_connections = self.settings.MAX_TRANSPORTER_POOL_SIZE
+        max_connections = self.settings['MAX_TRANSPORTER_POOL_SIZE']
         if max_connections == 0 or num_connections < max_connections:
             transporter    = self._make_transporter(server)
             id             = len(self.transporters[server]) - 1
@@ -235,7 +235,7 @@ class TransporterHandler(object):
         # Strip off any relative paths.
         for relative_path in relative_paths:
             if dst.startswith(relative_path):
-                parent_path = self.settings.SCAN_PATHS[relative_path]
+                parent_path = self.settings.['SCAN_PATHS'][relative_path]
                 dst = dst[len(relative_path):]
 
         # Ensure no absolute path is returned, which would make os.path.join()

@@ -21,7 +21,7 @@ class FSMonitorHandler(object):
         self.fsmonitor = fsmonitor_class(self._fsmonitor_callback, True, True, self.settings.IGNORE_PATHS, self.settings.FSMONITOR_DB, "CloudSync")
 
         # Monitor all sources' scan paths.
-        for source in self.settings['SCAN_PATHS']: 
+        for source in self.settings['SCAN_PATHS'].keys(): 
             self.logger.info("Setup: monitoring '%s'" % (source))
             self.fsmonitor.add_dir(source, FSMonitor.CREATED | FSMonitor.MODIFIED | FSMonitor.DELETED)
 
@@ -45,7 +45,7 @@ class FSMonitorHandler(object):
         while self.discover_queue.qsize() > 0:
             # Discover queue -> pipeline queue.
             (input_file, event) = self.discover_queue.get()
-            for server in self.settings.TRANSPORTERS:
+            for server in self.settings['TRANSPORTERS']:
                 self.transport_queue[server].put((input_file, event, server, input_file))
             self.logger.info("Discover queue -> pipeline queue: '%s'." % (input_file))
         self.lock.release()
@@ -54,7 +54,7 @@ class FSMonitorHandler(object):
         # Map FSMonitor's variable names to ours.
         input_file = event_path
 
-        if CALLBACKS_CONSOLE_OUTPUT:
+        if self.settings['CALLBACKS_CONSOLE_OUTPUT']:
             print """FSMONITOR CALLBACK FIRED:
                     input_file='%s'
                     event=%d"

@@ -16,7 +16,7 @@ class DBHandler(object):
     def setup_db(self):
         self.db_queue = Queue.Queue()
         # Create connection to synced files DB.
-        self.dbcon = sqlite3.connect(self.settings.SYNCED_FILES_DB)
+        self.dbcon = sqlite3.connect(self.settings['SYNCED_FILES_DB'])
         self.dbcon.text_factory = unicode # This is the default, but we set it explicitly, just to be sure.
         self.dbcur = self.dbcon.cursor()
         self.dbcur.execute("CREATE TABLE IF NOT EXISTS synced_files(input_file text, transported_file_basename text, url text, server text)")
@@ -35,14 +35,14 @@ class DBHandler(object):
 
     def process_db_queue(self):
         processed = 0 
-        # TODO: Alter configuration.
+        shared_secret = self.setting['WS_SHARED_SECRET']
         syncHelper = SyncHelper(
-                cogenda_shared_secret=self.setting.COGENDA_SHARED_SECRET,
-                ws_host=WS_HOST,
-                api_modify_resource=API_MODIFY_RESOURCE,
-                api_destroy_resource=API_DESTROY_RESOURCE)
+                ws_shared_secret= shared_secret if shared_secret else os.environ.get('WS_SHARED_SECRET', None),
+                ws_host=self.settings['WS_HOST'],
+                api_modify_resource=self.settings['API_MODIFY_RESOURCE'],
+                api_destroy_resource=self.settings['API_DESTROY_RESOURCE'])
 
-        while processed < QUEUE_PROCESS_BATCH_SIZE and self.db_queue.qsize() > 0:
+        while processed < self.settings['QUEUE_PROCESS_BATCH_SIZE'] and self.db_queue.qsize() > 0:
             # DB queue -> database.
             self.lock.acquire()
             (input_file, event, processed_for_server, output_file, transported_file, url, server) = self.db_queue.get()
@@ -82,21 +82,21 @@ class DBHandler(object):
         processed += 1
 
     def _sync_congenda(self, syncHelper, event, transported_file_basename, transported_file, url, server):
-        # Sync with cogenda web server
-        if OSS_DEFAULT_ACL != 'private' or AWS_DEFAULT_ACL != 'private':
+        # Sync with third-party service
+        if self.settings['IS_PUBLIC']: 
             return
         if event == FSMonitor.CREATED or event == FSMonitor.MODIFIED:
             result = syncHelper.sync_resource(transported_file_basename, url, server, transported_file)
             if not result:
-                self.logger.critical('Failed to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
+                self.logger.critical('Failed to sync with web service filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
             else:
-                self.logger.info('Success to sync with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
+                self.logger.info('Success to sync with web service filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
         elif event == FSMonitor.DELETED:
             result = syncHelper.destroy_resource(transported_file_basename, server)
             if not result:
-                self.logger.critical('Failed to destory resource with cogenda server filename: [%s] vendor: [%s]' %(transported_file_basename, server))
+                self.logger.critical('Failed to destory resource with web service filename: [%s] vendor: [%s]' %(transported_file_basename, server))
             else:
-                self.logger.info('Success to destroy resource with cogenda server filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
+                self.logger.info('Success to destroy resource with web service filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
         else:
             raise Exception("Non-existing event set.")
-        self.logger.debug("Sync cogenda -> 'synced file with cogenda web server' file: '%s' (URL: '%s')." % (transported_file, url))
+        self.logger.debug("Sync web service -> 'synced file with web service' file: '%s' (URL: '%s')." % (transported_file, url))
