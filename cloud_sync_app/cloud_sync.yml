@@ -29,14 +29,18 @@ RETRY_INTERVAL: 30
 #               AWS S3 SETTINGS                        #           
 ########################################################
 # The `private/public` bucket name
+AWS_STORAGE_BUCKET_PVT_NAME: 'cogenda-pvt'
 AWS_STORAGE_BUCKET_NAME: 'cogenda'
+
 
 ########################################################
 #               AliYun OSS SETTINGS                    #           
 ########################################################
 OSS_ACCESS_URL: 'oss-cn-qingdao-a.aliyuncs.com'
 # The `private/public` bucket name
+OSS_STORAGE_BUCKET_PVT_NAME: 'cogenda-pvt-qd'
 OSS_STORAGE_BUCKET_NAME: 'cogenda-qd'
+
 
 ########################################################
 #                 USER SETTINGS                        #           

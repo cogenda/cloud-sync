@@ -63,7 +63,7 @@ class CloudSync(threading.Thread):
         self.transporterHandler.shutdown() 
 
         # Log information about the synced files DB.
-        #self.dbHandler.shutdown()
+        self.dbHandler.shutdown()
 
         # Final message, then remove all loggers.
         self.loggerHandler.shutdown()

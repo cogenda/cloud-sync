@@ -22,12 +22,14 @@ class TransporterOSS(Transporter):
     def __init__(self, settings, callback, error_callback, parent_logger=None):
         Transporter.__init__(self, callback, error_callback, parent_logger)
         default_acl = 'public-read'
+        default_bucket = settings['OSS_STORAGE_BUCKET_NAME']
         if not settings['IS_PUBLIC']:
             default_acl = 'private'
+            default_bucket = settings['OSS_STORAGE_BUCKET_PVT_NAME']
 
         try:
             self.storage = OSSStorage(
-                    bucket=settings['OSS_STORAGE_BUCKET_NAME'].encode('utf-8'),
+                    bucket= default_bucket.encode('utf-8'),
                     acl = default_acl
                     )
         except Exception, e:            

@@ -25,15 +25,17 @@ class TransporterS3(Transporter):
         Transporter.__init__(self, callback, error_callback, parent_logger)
 
         default_acl = 'public-read'
+        default_bucket = conf['AWS_STORAGE_BUCKET_NAME']
         if not conf['IS_PUBLIC']:
             default_acl = 'private'
+            default_bucket = conf['AWS_STORAGE_BUCKET_PVT_NAME']
 
         setattr(settings, 'OSS_ACCESS_URL', conf['OSS_ACCESS_URL'])
 
         try:
             self.storage = S3BotoStorage(
                     acl= default_acl,
-                    bucket= conf['AWS_STORAGE_BUCKET_NAME'].encode('utf-8')
+                    bucket= default_bucket.encode('utf-8')
                     )
         except Exception, e:
             raise ConnectionError(e)
