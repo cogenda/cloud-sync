@@ -40,10 +40,9 @@ class SyncHelper(object):
             'url': url, 
             'server': server, 
             'type': type,
-            'desc': ''
+            'desc': filename
             }})
         auth_token = self._make_hamc_key(payload)
-        print auth_token
         headers = {'content-type': 'application/json', 'Authorization': auth_token}
         response = requests.post('%s%s' %(self.ws_host, self.api_modify_resource), data=payload, headers=headers)
         if response.status_code != 200:
@@ -82,17 +81,3 @@ class SyncHelper(object):
             return 6
         else:
             raise Exception("Invalide downloads dir structure.")
-
-if __name__ == '__main__':
-
-    WS_HOST='http://localhost:8088'
-    API_MODIFY_RESOURCE='/api/modify-resource'
-    API_DESTROY_RESOURCE='/api/destroy-resource'
-
-    syncHelper = SyncHelper(ws_host=WS_HOST, 
-            ws_shared_secret='cogenda-ws-secret', 
-            api_modify_resource=API_MODIFY_RESOURCE, 
-            api_destroy_resource=API_DESTROY_RESOURCE)
-
-    print syncHelper.sync_resource('xxxxxx', 'http://test.com/xx.png', 'oss', SyncHelper.PUBLIC_PUBLICATION)
-    print syncHelper.destroy_resource('xxxxxx', 'oss')
