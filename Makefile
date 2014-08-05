@@ -4,20 +4,15 @@
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo ""
-	@echo "  run-pub       to sync public files with cloud sync service"
-	@echo "  run-pvt       to sync private files with cloud sync service"
+	@echo "  run           to sync files with cloud sync service"
 	@echo "  stop          to shutdown cloud sync service"
 	@echo "  verify        to verify synced files is missing"
 	@echo ""
 
 
-.PHONY: run-pub
-run-pub: 
-	@python -m cloud_sync_app.cloud_sync pub
-
-.PHONY: run-pvt
-run-pvt:
-	@python -m cloud_sync_app.cloud_sync pvt
+.PHONY: run
+run: 
+	@python -m cloud_sync_app.cloud_sync ./cloud_sync.yml
 
 stop:
 	@cat /tmp/cloud_sync.pid|xargs kill -9

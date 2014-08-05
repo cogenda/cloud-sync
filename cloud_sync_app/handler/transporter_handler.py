@@ -177,7 +177,7 @@ class TransporterHandler(object):
         """
         transporter_class = None
         module = None
-        alternatives = [transporter]
+        alternatives = []
         default_prefix = 'cloud_sync_app.transporter.transporter_'
         if not transporter.startswith(default_prefix):
             alternatives.append('%s%s' % (default_prefix, transporter))

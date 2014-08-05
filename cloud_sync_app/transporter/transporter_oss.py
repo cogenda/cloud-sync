@@ -11,21 +11,22 @@ class TransporterOSS(Transporter):
     name='OSS'
 
 
+    """
     def __init__(self, callback, error_callback, parent_logger=None):
         Transporter.__init__(self, callback, error_callback, parent_logger)
         try:
             self.storage = OSSStorage()
         except Exception, e:            
             raise ConnectionError(e)
-
     """
-    def __init__(self, settings, callback, error_callback, parent_logger=None):
+
+    def __init__(self, conf, callback, error_callback, parent_logger=None):
         Transporter.__init__(self, callback, error_callback, parent_logger)
         default_acl = 'public-read'
-        default_bucket = settings['OSS_STORAGE_BUCKET_NAME']
-        if not settings['IS_PUBLIC']:
+        default_bucket = conf['OSS_STORAGE_BUCKET_NAME']
+        if not conf['IS_PUBLIC']:
             default_acl = 'private'
-            default_bucket = settings['OSS_STORAGE_BUCKET_PVT_NAME']
+            default_bucket = conf['OSS_STORAGE_BUCKET_PVT_NAME']
 
         try:
             self.storage = OSSStorage(
@@ -34,4 +35,3 @@ class TransporterOSS(Transporter):
                     )
         except Exception, e:            
             raise ConnectionError(e)
-    """

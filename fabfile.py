@@ -61,9 +61,8 @@ def install_app():
     """
     dist = local('python setup.py --fullname', capture=True).strip()
     with cd('~/tmp/%s' % dist):
-        run('cp -f ~/tmp/%s/cloud_sync_app/sync_pub_settings.py %s' % (dist, CLOUD_SYNC_HOME))
-        run('cp -f ~/tmp/%s/cloud_sync_app/sync_pvt_settings.py %s' % (dist, CLOUD_SYNC_HOME))
         run('cp -f ~/tmp/%s/Makefile %s' % (dist, CLOUD_SYNC_HOME))
+        run('cp -f ~/tmp/%s/cloud_sync.yml %s' % (dist, CLOUD_SYNC_HOME))
         run('rm -f %s/*.pyc' % CLOUD_SYNC_HOME)
         run('%s/venv/bin/python setup.py install' % CLOUD_SYNC_HOME)
     print(red("Auto install cloud sync service succeed!"))
@@ -74,7 +73,7 @@ def restart_app():
     with virtualenv():
         #run("cat /tmp/cloud_sync.pid | xargs kill -9")
         run("ps -ef | grep 'cloud_sync' | grep -v 'grep' | awk '{print $2}' | xargs kill -9")
-        run("dtach -n `mktemp -u /tmp/dtach.XXXX` python -m cloud_sync_app.cloud_sync pub", pty=False)
+        run("dtach -n `mktemp -u /tmp/dtach.XXXX` python -m cloud_sync_app.cloud_sync ./cloud_sync.yml", pty=False)
     print(red("Restart Cloud Sync Service Succeed!"))
 
 def clean():

@@ -1,6 +1,7 @@
 recursive-include cloud_sync_app *.*
 include cloud_sync_app/*.sh
 include Makefile
+include cloud_sync.yml
 
 # exclude all bytecode
 global-exclude *.pyo
