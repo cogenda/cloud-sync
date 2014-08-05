@@ -7,7 +7,8 @@ install_requires = [
     'django',
     'django-storages',
     'boto',
-    'requests'
+    'requests',
+    'PyYAML'
 ]
 
 setup(
