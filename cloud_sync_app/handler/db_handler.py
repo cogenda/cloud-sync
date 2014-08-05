@@ -35,9 +35,8 @@ class DBHandler(object):
 
     def process_db_queue(self):
         processed = 0 
-        shared_secret = self.setting['WS_SHARED_SECRET']
         syncHelper = SyncHelper(
-                ws_shared_secret= shared_secret if shared_secret else os.environ.get('WS_SHARED_SECRET', None),
+                ws_shared_secret= os.environ.get('WS_SHARED_SECRET', 'cogenda-ws-secret'),
                 ws_host=self.settings['WS_HOST'],
                 api_modify_resource=self.settings['API_MODIFY_RESOURCE'],
                 api_destroy_resource=self.settings['API_DESTROY_RESOURCE'])

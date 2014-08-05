@@ -3,6 +3,7 @@
 import os
 import sys
 import time
+import Queue
 from ..persistent.persistent_list import *
 
 class RetryHandler(object):
@@ -13,12 +14,12 @@ class RetryHandler(object):
         self.logger = logger
         self.last_retry = 0
 
-    def setup_retry(self, transport_queue):
+    def setup_retry(self):
         self.failed_files = PersistentList("failed_files_list", self.settings['PERSISTENT_DATA_DB'])
         num_failed_files = len(self.failed_files)
         self.logger.warning("Setup: initialized 'failed_files' persistent list, contains %d items." % (num_failed_files))
         self.retry_queue = Queue.Queue()
-        self.transport_queue = transport_queue
+        return self.retry_queue
 
     def process_retry_queue(self):
         processed = 0
@@ -43,7 +44,8 @@ class RetryHandler(object):
                 self.logger.warning("Retry queue -> 'failed_files' persistent list: '%s'. File already being retried later." % (input_file))
             processed += 1
 
-    def allow_retry(self):
+    def allow_retry(self, transport_queue):
+        self.transport_queue = transport_queue
         num_failed_files = len(self.failed_files)
         should_retry = self.last_retry + self.settings['RETRY_INTERVAL'] < time.time()
         
@@ -54,7 +56,7 @@ class RetryHandler(object):
             while processed < self.settings['QUEUE_PROCESS_BATCH_SIZE'] and processed < len(self.failed_files):
                 item = self.failed_files[processed]
                 failed_items.append(item)
-                for server in TRANSPORTERS:
+                for server in self.settings['TRANSPORTERS']:
                     self.transport_queue[server].put((item[0], item[1], server, item[0]))
                 processed += 1
             

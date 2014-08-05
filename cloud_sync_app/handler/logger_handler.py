@@ -7,10 +7,10 @@ import logging.handlers
 
 class LoggerHandler(object):
 
-    def __init__(self, settings):
+    def init_logger(self, settings):
         self.logger = logging.getLogger("CloudSync")
         self.logger.setLevel(self._filter_logging_level(settings['FILE_LOGGER_LEVEL']))
-        fileHandler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=5242880, backupCount=5)
+        fileHandler = logging.handlers.RotatingFileHandler(settings['LOG_FILE'], maxBytes=5242880, backupCount=5)
         consoleHandler = logging.StreamHandler()
         consoleHandler.setLevel(self._filter_logging_level(settings['CONSOLE_LOGGER_LEVEL']))
         formatter = logging.Formatter("%(asctime)s - %(name)-25s - %(levelname)-8s - %(message)s")
@@ -18,6 +18,7 @@ class LoggerHandler(object):
         consoleHandler.setFormatter(formatter)
         self.logger.addHandler(fileHandler)
         self.logger.addHandler(consoleHandler)
+        return self.logger
 
     def shutdown(self):
         while len(self.logger.handlers):

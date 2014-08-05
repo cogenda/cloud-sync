@@ -12,41 +12,45 @@ from .daemon_thread_runner import *
 import yaml
 import time
 
+# Define exceptions.
+class CloudSyncError(Exception): pass
+class CloudSyncInitError(CloudSyncError): pass
+
 class CloudSync(threading.Thread):
 
     def __init__(self, settings, restart=False):
         threading.Thread.__init__(self, name="CloudSyncThread")
         self.lock = threading.Lock()
-        self.settings = settings
+        #self.settings = settings
         self.die = False
-        self.logger = LoggerHandler(settings)
+        self.loggerHandler = LoggerHandler()
+        self.logger = self.loggerHandler.init_logger(settings)
         if restart:
             self.logger.warning("Cloud Sync has restarted itself!")
         self.logger.warning("Cloud Sync is initializing.")
-        self.transporterHandler = TransporterHandler(self.settings, self.logger, self.lock)
-        self.dbHandler = DBHandler(self.settings, self.logger, self.lock)
-        self.retryHandler = RetryHandler(self.settings, self.logger, self.lock)
-        self.fsmonitorHandler = FSMonitorHandler(self.settings, self.logger, self.lock)
+        self.transporterHandler = TransporterHandler(settings, self.logger, self.lock)
+        self.dbHandler = DBHandler(settings, self.logger, self.lock)
+        self.retryHandler = RetryHandler(settings, self.logger, self.lock)
+        self.fsmonitorHandler = FSMonitorHandler(settings, self.logger, self.lock)
         
     def __setup(self): 
-        db_queue = self.dbHandler.setup_db()
-        transport_queue = self.transporterHandler.setup_transporters(db_queue)
-        self.retryHandler.setup_retry(transport_queue) 
-        db_queue = self.dbHandler.setup_db()
-        self.fsmonitorHandler.set_fsmonitor(transport_queue)
+        self.transport_queue = self.transporterHandler.setup_transporters()
+        self.db_queue = self.dbHandler.setup_db()
+        self.retry_queue = self.retryHandler.setup_retry() 
+        self.fsmonitorHandler.setup_fsmonitor()
 
     def run(self):
         self.__setup()
         self.fsmonitorHandler.bootstrap()
         try:
             while not self.die:
-                self.fsmonitorHandler.process_discover_queue()
-                self.transporterHandler.process_transport_queue()
-                self.dbHandler.process_db_queue() 
+                self.fsmonitorHandler.process_discover_queue(self.transport_queue)
+                self.transporterHandler.process_transport_queue(self.db_queue, self.retry_queue)
+                self.dbHandler.process_db_queue()
                 self.retryHandler.process_retry_queue()
-                self.retryHandler.allow_retry()
+                self.retryHandler.allow_retry(self.transport_queue)
                 time.sleep(0.2)
-        except: Exception, e:
+        except Exception, e:
             self.logger.exception("Unhandled exception of type '%s' detected, arguments: '%s'." % (e.__class__.__name__, e.args))
             self.logger.error("Stopping Cloud Sync to ensure the application is stopped in a clean manner.")
             os.kill(os.getpid(), signal.SIGTERM)
@@ -59,10 +63,10 @@ class CloudSync(threading.Thread):
         self.transporterHandler.shutdown() 
 
         # Log information about the synced files DB.
-        self.dbHandler.shutdown()
+        #self.dbHandler.shutdown()
 
         # Final message, then remove all loggers.
-        self.logger.shutdown()
+        self.loggerHandler.shutdown()
 
     def stop(self):
         # Everybody dies only once.
@@ -78,9 +82,9 @@ class CloudSync(threading.Thread):
         self.die = True
         self.lock.release()
 
-def run_cloud_sync(settings, restart=False)
+def run_cloud_sync(settings, restart=False):
     try:
-        cloud_sync = CloudSync(restart)
+        cloud_sync = CloudSync(settings, restart)
     except CloudSyncInitError, e:
         print e.__class__.__name__, e
     except CloudSyncError, e:
@@ -101,7 +105,7 @@ if __name__ == '__main__':
         sys.exist(2)
 
     if not 'DJANGO_SETTINGS_MODULE' in os.environ:
-        os.environ['DJANGO_SETTINGS_MODULE'] = 'django_storage_module'
+        os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_app.django_storage_module'
 
     conf = open(sys.argv[1])
     settings = yaml.load(conf)

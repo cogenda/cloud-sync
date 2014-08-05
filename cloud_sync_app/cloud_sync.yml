@@ -41,9 +41,8 @@ OSS_STORAGE_BUCKET_NAME: 'cogenda-qd'
 ########################################################
 #                 USER SETTINGS                        #           
 ########################################################
-TARGET_HOME: ''
 SCAN_PATHS: {
-        TARGET_HOME: 'static',
+        '/home/jiltang/tmp/static': 'static',
         }
 IGNORE_PATHS: []
 TRANSPORTERS:

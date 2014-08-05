@@ -23,11 +23,11 @@ class SyncHelper(object):
 
 
     def __init__(self, 
-            cogenda_shared_secret='cogenda-ws-secret', 
+            ws_shared_secret='cogenda-ws-secret', 
             ws_host='http://localhost:8088', 
             api_modify_resource='/api/modify-resource',
             api_destroy_resource='/api/destroy-resource'):
-        self.cogenda_shared_secret = cogenda_shared_secret
+        self.ws_shared_secret = ws_shared_secret
         self.ws_host = ws_host
         self.api_modify_resource = api_modify_resource
         self.api_destroy_resource = api_destroy_resource
@@ -63,7 +63,7 @@ class SyncHelper(object):
 
     def _make_hamc_key(self, message):
         """ Generate HMAC key """
-        auth_token = base64.b64encode(hmac.new(self.cogenda_shared_secret, message, digestmod=hashlib.sha256).digest())
+        auth_token = base64.b64encode(hmac.new(self.ws_shared_secret, message, digestmod=hashlib.sha256).digest())
         return auth_token
 
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     API_DESTROY_RESOURCE='/api/destroy-resource'
 
     syncHelper = SyncHelper(ws_host=WS_HOST, 
-            cogenda_shared_secret='cogenda-ws-secret', 
+            ws_shared_secret='cogenda-ws-secret', 
             api_modify_resource=API_MODIFY_RESOURCE, 
             api_destroy_resource=API_DESTROY_RESOURCE)
 
