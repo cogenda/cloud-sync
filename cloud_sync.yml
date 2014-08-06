@@ -1,7 +1,7 @@
 ########################################################
 #             SYNC COGENDA WEB SETTINGS             #           
 ########################################################
-#WS_HOST: 'http://localhost:8088'
+SYNC_WS: False
 WS_HOST: 'http://uk.cogenda.com'
 API_MODIFY_RESOURCE: '/api/modify-resource'
 API_DESTROY_RESOURCE: '/api/destroy-resource'
@@ -47,8 +47,8 @@ OSS_STORAGE_BUCKET_NAME: 'cogenda-qd'
 #                 USER SETTINGS                        #           
 ########################################################
 SCAN_PATHS: {
-        '/home/tim/apps/cogenda-web/assets_rel/static': 'static',
-        #'/Users/tim-tang/Work/downloads': 'downloads',
+        #'/home/tim/apps/cogenda-web/assets_rel/static': 'static',
+        '/Users/tim-tang/Work/downloads': 'downloads',
         }
 IGNORE_PATHS: []
 TRANSPORTERS:

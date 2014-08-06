@@ -4,6 +4,7 @@ import os, sys
 import sqlite3
 from ..fsmonitor.fsmonitor import *
 from ..helper.sync_helper import SyncHelper
+from .ws_handler import WSHandler
 
 class DBHandler(object):
 
@@ -11,6 +12,7 @@ class DBHandler(object):
         self.settings = settings
         self.logger = logger
         self.lock = lock
+        self.wsHandler = WSHandler(settings, logger)
 
     def setup_db(self):
         self.db_queue = Queue.Queue()
@@ -76,25 +78,6 @@ class DBHandler(object):
                 raise Exception("Non-existing event set.")
             self.logger.debug("DB queue -> 'synced files' DB: '%s' (URL: '%s')." % (input_file, url))
 
-            self._sync_ws(syncHelper, event, transported_file_basename, transported_file, url, server)
+            """ Sync upload results with remote web service """
+            self.wsHandler.sync_ws(event, transported_file_basename, transported_file, url, server) 
         processed += 1
-
-    def _sync_ws(self, syncHelper, event, transported_file_basename, transported_file, url, server):
-        # Sync with third-party service
-        if self.settings['IS_PUBLIC']: 
-            return
-        if event == FSMonitor.CREATED or event == FSMonitor.MODIFIED:
-            result = syncHelper.sync_resource(transported_file_basename, url, server, transported_file)
-            if not result:
-                self.logger.critical('Failed to sync with web service filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
-            else:
-                self.logger.info('Success to sync with web service filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
-        elif event == FSMonitor.DELETED:
-            result = syncHelper.destroy_resource(transported_file_basename, server)
-            if not result:
-                self.logger.critical('Failed to destory resource with web service filename: [%s] vendor: [%s]' %(transported_file_basename, server))
-            else:
-                self.logger.info('Success to destroy resource with web service filename: [%s]  vendor: [%s]' %(transported_file_basename, server))
-        else:
-            raise Exception("Non-existing event set.")
-        self.logger.debug("Sync web service -> 'synced file with web service' file: '%s' (URL: '%s')." % (transported_file, url))

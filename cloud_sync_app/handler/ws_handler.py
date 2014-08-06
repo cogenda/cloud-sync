@@ -16,7 +16,7 @@ class WSHandler(object):
 
     def sync_ws(self, event, transported_file_basename, transported_file, url, server):
         """ Sync with external web service """
-        if self.settings['IS_PUBLIC']: 
+        if not self.settings['SYNC_WS']: 
             return
         if event == FSMonitor.CREATED or event == FSMonitor.MODIFIED:
             result = self.syncHelper.sync_resource(transported_file_basename, url, server, transported_file)
