@@ -23,7 +23,6 @@ files_unverified = []
 url_queue = Queue.Queue()
 progress_queue = Queue.Queue()
 
-#lock = allocate_lock()
 lock = threading.Lock()
 def worker(url_queue):
     is_active = True
@@ -43,9 +42,9 @@ def do_crawl(url, input_file, server):
         response = conn.getresponse()
         if not response or not (response.status == 200 and response.reason == 'OK'):
             #print "Missing: %s, which should be available at %s (server: %s)" % (input_file, url, server)
-            files_invalid.append(input_file)             
+            files_invalid.append((input_file, server))
     except Exception, e:
-        files_unverified.append(input_file) 
+        files_unverified.append((input_file, server)) 
     finally:
         lock.acquire()
         num_files_checked += 1
@@ -79,14 +78,14 @@ def print_results():
     print "# "+ caption_failed_files 
     if len(files_invalid) > 0:
         print "#" + "-"*28
-        for failed_file in files_invalid:
-            print "# -" + failed_file
+        for (failed_file, server) in files_invalid:
+            print "# [%s] - %s" % (server, failed_file)
     print "#" + "-"*28
     print "# "+ caption_unverified_files 
     if len(files_unverified) > 0:
         print "#" + "-"*28
-        for unverified_file in files_unverified:
-            print "# -" + unverified_file
+        for (unverified_file, server) in files_unverified:
+            print "# [%s] - %s" % (server, unverified_file)
     print "#" + "-"*28
 
 if __name__ == '__main__':
