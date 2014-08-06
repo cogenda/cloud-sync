@@ -12,7 +12,6 @@ class DBHandler(object):
         self.logger = logger
         self.lock = lock
 
-
     def setup_db(self):
         self.db_queue = Queue.Queue()
         # Create connection to synced files DB.
@@ -77,10 +76,10 @@ class DBHandler(object):
                 raise Exception("Non-existing event set.")
             self.logger.debug("DB queue -> 'synced files' DB: '%s' (URL: '%s')." % (input_file, url))
 
-            self._sync_congenda(syncHelper, event, transported_file_basename, transported_file, url, server)
+            self._sync_ws(syncHelper, event, transported_file_basename, transported_file, url, server)
         processed += 1
 
-    def _sync_congenda(self, syncHelper, event, transported_file_basename, transported_file, url, server):
+    def _sync_ws(self, syncHelper, event, transported_file_basename, transported_file, url, server):
         # Sync with third-party service
         if self.settings['IS_PUBLIC']: 
             return

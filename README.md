@@ -11,32 +11,29 @@
 
 -----
 
-Auto upload tool for AWS S3 & AliYun OSS.
+Cloud sync tool for AWS S3 & AliYun OSS.
 
-- Auto monitor system file operations (CREATE/DELETE/MODIFY)
-- Auto transport monitored file to AWS S3 & AliYun OSS.
-- Auto Sync upload files with cogenda web server.
-- Record synced files into SQLite DB.
+- Monitoring system file operations. (CREATE/DELETE/MODIFY)
+- Auto sync monitored file to AWS S3 & AliYun OSS.
+- Invoke web services once sync file succeed. (with HMAC based authentication)
+- Recording synced files into SQLite DB & synced file status verification.
+- Auto deploy with Travis CI & Fabric.
 
 ### Preparation
 
     $ ./setenv
     $ source venv/bin/activate
 
-> Specify user cutomized settings in cloud_sync_setting.py.
-
 ## Serving public files
 
-    $ make run-public
-
-### Serving private files
-
-    $ make run-private
+    $ make run
 
 ### Verify uploaded files
 
-    $make verify
+    $ make verify
 
 ## Stop Serving
 
-    $ cat /tmp/cloud_sync.pid|xargs kill -9
+    $ make stop
+
+> Please dig into cloud_sync.yml to specify your customized configuration.

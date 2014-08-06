@@ -23,6 +23,7 @@ MAX_TRANSPORTER_QUEUE_SIZE: 5
 MAX_TRANSPORTER_POOL_SIZE: 5
 QUEUE_PROCESS_BATCH_SIZE: 20
 CALLBACKS_CONSOLE_OUTPUT: True
+# Retry interval after transport failure. (unit: seconds)
 RETRY_INTERVAL: 30
 
 ########################################################

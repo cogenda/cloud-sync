@@ -11,16 +11,6 @@ class TransporterS3(Transporter):
 
     name = 'S3'
 
-
-    """
-    def __init__(self, callback, error_callback, parent_logger=None):
-        Transporter.__init__(self, callback, error_callback, parent_logger)
-        try:
-            self.storage = S3BotoStorage()
-        except Exception, e:            
-            raise ConnectionError(e)
-    """
-
     def __init__(self, conf, callback, error_callback, parent_logger=None):
         Transporter.__init__(self, callback, error_callback, parent_logger)
 

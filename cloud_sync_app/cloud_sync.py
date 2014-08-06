@@ -97,11 +97,10 @@ def run_cloud_sync(settings, restart=False):
         del cloud_sync
 
 if __name__ == '__main__':
-    if len(sys.argv) == 2:
-        if not os.path.exists(sys.argv[1]):
-            print 'Cloud Sync configuration file [%s] not exists.' % sys.argv[1]
-            sys.exist(2)
-    else:
+    if len(sys.argv) < 2:
+        sys.exist(2)
+    if not os.path.exists(sys.argv[1]):
+        print 'Cloud Sync configuration file [%s] not exists.' % sys.argv[1]
         sys.exist(2)
 
     if not 'DJANGO_SETTINGS_MODULE' in os.environ:
@@ -109,7 +108,6 @@ if __name__ == '__main__':
 
     conf = open(sys.argv[1])
     settings = yaml.load(conf)
-#    print settings
     conf.close()
 
     from django.conf import settings as django_settings

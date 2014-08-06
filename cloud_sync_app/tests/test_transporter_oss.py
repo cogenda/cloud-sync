@@ -5,7 +5,9 @@ import os
 import os.path
 
 if not 'DJANGO_SETTINGS_MODULE' in os.environ:
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_settings'
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_app.django_storage_module'
+
+    
 
 from ..transporter.transporter_oss import *
 

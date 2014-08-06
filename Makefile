@@ -6,7 +6,8 @@ help:
 	@echo ""
 	@echo "  run           to sync files with cloud sync service"
 	@echo "  stop          to shutdown cloud sync service"
-	@echo "  verify        to verify synced files is missing"
+	@echo "  verify        to statistic synced files [synced|invalide|unverified]"
+	@echo "  deploy        to deploy cloud sync service into Linode production environment"
 	@echo ""
 
 
