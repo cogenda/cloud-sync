@@ -1,7 +1,9 @@
 # -*- coding:utf-8 -*-
 import os
 
-""" Dummy settings for `django-storages` """
+########################################################
+#           Dummy settings for `django-storages`       #
+########################################################
 SECRET_KEY='cloud-sync-service'
 
 ########################################################
@@ -16,7 +18,7 @@ AWS_HEADERS = {
         'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT', 
         'Cache-Control': 'max-age=86400',
         'Vary':'Accept-Encoding',
-       }
+        }
 
 ########################################################
 #               AliYun OSS SETTINGS                    #           
@@ -29,4 +31,4 @@ OSS_FILE_BUFFER_SIZE = 5*1024*1024
 OSS_HEADERS = {
         'Expires': 'Tue, 20 Jan 2037 03:00:00 GMT',
         'Cache-Control': 'max-age=31536000',
-    }
+        }

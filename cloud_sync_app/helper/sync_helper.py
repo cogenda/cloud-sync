@@ -21,7 +21,6 @@ class SyncHelper(object):
     ALL_USER_PKG='alluser/software-pkg'
     PRIVATE='private/'
 
-
     def __init__(self, 
             ws_shared_secret='cogenda-ws-secret', 
             ws_host='http://localhost:8088', 

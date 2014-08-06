@@ -21,7 +21,6 @@ class CloudSync(threading.Thread):
     def __init__(self, settings, restart=False):
         threading.Thread.__init__(self, name="CloudSyncThread")
         self.lock = threading.Lock()
-        #self.settings = settings
         self.die = False
         self.loggerHandler = LoggerHandler()
         self.logger = self.loggerHandler.init_logger(settings)
