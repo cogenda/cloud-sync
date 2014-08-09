@@ -4,7 +4,6 @@ import os, sys
 import sqlite3
 from ..fsmonitor.fsmonitor import *
 from ..helper.sync_helper import SyncHelper
-from .ws_handler import WSHandler
 
 class DBHandler(object):
 
@@ -36,11 +35,15 @@ class DBHandler(object):
 
     def process_db_queue(self):
         processed = 0 
+
+        """
         syncHelper = SyncHelper(
                 ws_shared_secret= os.environ.get('WS_SHARED_SECRET', 'cogenda-ws-secret'),
                 ws_host=self.settings['WS_HOST'],
                 api_modify_resource=self.settings['API_MODIFY_RESOURCE'],
+                api_notify_explorer=self.settings['API_NOTIFY_EXPLORER'],
                 api_destroy_resource=self.settings['API_DESTROY_RESOURCE'])
+        """
 
         while processed < self.settings['QUEUE_PROCESS_BATCH_SIZE'] and self.db_queue.qsize() > 0:
             # DB queue -> database.
@@ -79,5 +82,5 @@ class DBHandler(object):
             self.logger.debug("DB queue -> 'synced files' DB: '%s' (URL: '%s')." % (input_file, url))
 
             """ Sync upload results with remote web service """
-            self.wsHandler.sync_ws(event, transported_file_basename, transported_file, url, server) 
+            #self.wsHandler.sync_ws(event, transported_file_basename, transported_file, url, server) 
         processed += 1

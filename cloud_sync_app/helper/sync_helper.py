@@ -25,10 +25,12 @@ class SyncHelper(object):
             ws_shared_secret='cogenda-ws-secret', 
             ws_host='http://localhost:8088', 
             api_modify_resource='/api/modify-resource',
+            api_notify_explorer='/api/notify-explorer',
             api_destroy_resource='/api/destroy-resource'):
         self.ws_shared_secret = ws_shared_secret
         self.ws_host = ws_host
         self.api_modify_resource = api_modify_resource
+        self.api_notify_explorer = api_notify_explorer
         self.api_destroy_resource = api_destroy_resource
 
 
@@ -58,6 +60,14 @@ class SyncHelper(object):
             return None
         return json.loads(response.json())
 
+    def notify_explorer(self):
+        payload = json.dumps({'json': {'msg': 'Nofity cloud explorer.'}})
+        auth_token = self._make_hamc_key(payload)
+        headers = {'content-type': 'application/json', 'Authorization': auth_token}
+        response = requests.post('%s%s' %(self.ws_host, self.api_notify_explorer), data=payload, headers=headers)
+        if response.status_code != 200:
+            return None
+        return json.loads(response.json())
 
     def _make_hamc_key(self, message):
         """ Generate HMAC key """

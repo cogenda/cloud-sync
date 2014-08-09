@@ -5,6 +5,7 @@ SYNC_WS: False
 WS_HOST: 'http://uk.cogenda.com'
 API_MODIFY_RESOURCE: '/api/modify-resource'
 API_DESTROY_RESOURCE: '/api/destroy-resource'
+API_NOTIFY_EXPLORER: '/api/notify-explorer'
 
 ########################################################
 #               CLOUD SYNC SETTINGS                    #           
