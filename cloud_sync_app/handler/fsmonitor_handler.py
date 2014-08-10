@@ -15,6 +15,7 @@ class FSMonitorHandler(object):
 
     def setup_fsmonitor(self):
         self.discover_queue  = Queue.Queue()
+        self.monitored_file_count = 0
         # Initialize the FSMonitor.
         fsmonitor_class = get_fsmonitor()
         self.fsmonitor = fsmonitor_class(self._fsmonitor_callback, True, True, self.settings['IGNORE_PATHS'], self.settings['FSMONITOR_DB'], "CloudSync")
@@ -29,6 +30,9 @@ class FSMonitorHandler(object):
         self.fsmonitor.start()
         self.logger.warning("Fully up and running now.")
         
+    def peek_monitored_count(self):
+        return self.monitored_file_count
+
     def shutdown(self):
         # Stop the FSMonitor and wait for its thread to end.
         self.fsmonitor.stop()
@@ -83,4 +87,5 @@ class FSMonitorHandler(object):
             # Add to discover queue.
             self.lock.acquire()
             self.discover_queue.put((input_file, event))
+            self.monitored_file_count += 1
             self.lock.release()

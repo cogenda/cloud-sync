@@ -52,7 +52,7 @@ class TransporterHandler(object):
                 self.logger.warning("Stopped transporters for the '%s' server." % (server))
 
 
-    def process_transport_queue(self, db_queue, retry_queue):
+    def process_transport_queue(self, db_queue, retry_queue=None):
         self.db_queue = db_queue
         self.retry_queue = retry_queue
         for server in self.settings['TRANSPORTERS']:
@@ -231,7 +231,8 @@ class TransporterHandler(object):
                     (curried): input_file='%s'
                     (curried): event=%d""" % (input_file, event)
 
-        self.retry_queue.put((input_file, event))
+        if self.retry_queue:
+            self.retry_queue.put((input_file, event))
 
 
     def _calculate_transporter_dst(self, src, relative_paths=[]):

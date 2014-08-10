@@ -49,7 +49,7 @@ class DaemonThreadRunner(object):
 
     def handle_signal(self, signalNumber, frame):
         # Ctrl+C = SIGINT, Ctrl+X = SIGTSTP; these are entered by the user
-        # who's looking at File Conveyor's activity in the console. Hence,
+        # who's looking at Cloud Sync's activity in the console. Hence,
         # these should definitely stop the process and not allow it to restart.
         if signalNumber != signal.SIGTERM:
             DaemonThreadRunner.stopped_in_console = True

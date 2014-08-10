@@ -11,9 +11,9 @@ class DBHandler(object):
         self.settings = settings
         self.logger = logger
         self.lock = lock
-        self.wsHandler = WSHandler(settings, logger)
 
     def setup_db(self):
+        self.transported_file_count = 0
         self.db_queue = Queue.Queue()
         # Create connection to synced files DB.
         self.dbcon = sqlite3.connect(self.settings['SYNCED_FILES_DB'])
@@ -26,6 +26,9 @@ class DBHandler(object):
         num_synced_files = self.dbcur.fetchone()[0]
         self.logger.warning("Setup: connected to the synced files DB. Contains metadata for %d previously synced files." % (num_synced_files))
         return self.db_queue
+
+    def peek_transported_count(self):
+        return self.transported_file_count 
 
     def shutdown(self):
         # Log information about the synced files DB.
@@ -80,7 +83,6 @@ class DBHandler(object):
             else:
                 raise Exception("Non-existing event set.")
             self.logger.debug("DB queue -> 'synced files' DB: '%s' (URL: '%s')." % (input_file, url))
+            self.transported_file_count +=1
 
-            """ Sync upload results with remote web service """
-            #self.wsHandler.sync_ws(event, transported_file_basename, transported_file, url, server) 
         processed += 1

@@ -31,7 +31,7 @@ class FSMonitorPolling(FSMonitor):
 
         if self.persistent:
             # Generate the missed events. This implies that events that
-            # occurred while File Conveyor was offline (or not yet in use)
+            # occurred while Cloud Sync was offline (or not yet in use)
             # will *always* be generated, whether this is the first run or the
             # thousandth.
             FSMonitor.generate_missed_events(self, path)
@@ -59,7 +59,6 @@ class FSMonitorPolling(FSMonitor):
         while not self.die:
             self.__process_queues()
             # Sleep some time.
-            # TODO: make this configurable!
             time.sleep(self.__class__.interval)
 
 

@@ -9,6 +9,7 @@ from .handler.fsmonitor_handler import *
 from .handler.db_handler import *
 from .handler.retry_handler import *
 from .daemon_thread_runner import *
+from .handler.ws_handler import *
 import yaml
 import time
 
@@ -29,13 +30,18 @@ class CloudSync(threading.Thread):
         self.logger.warning("Cloud Sync is initializing.")
         self.transporterHandler = TransporterHandler(settings, self.logger, self.lock)
         self.dbHandler = DBHandler(settings, self.logger, self.lock)
-        self.retryHandler = RetryHandler(settings, self.logger, self.lock)
+        if settings['RUN_AS_SERVICE']: 
+            self.retryHandler = RetryHandler(settings, self.logger, self.lock)
+        else:
+            self.wsHandler = WSHandler(settings, self.logger)
         self.fsmonitorHandler = FSMonitorHandler(settings, self.logger, self.lock)
-        
+        self.settings = settings
+
     def __setup(self): 
         self.transport_queue = self.transporterHandler.setup_transporters()
         self.db_queue = self.dbHandler.setup_db()
-        self.retry_queue = self.retryHandler.setup_retry() 
+        if self.settings['RUN_AS_SERVICE']:
+            self.retry_queue = self.retryHandler.setup_retry()
         self.fsmonitorHandler.setup_fsmonitor()
 
     def run(self):
@@ -44,15 +50,24 @@ class CloudSync(threading.Thread):
         try:
             while not self.die:
                 self.fsmonitorHandler.process_discover_queue(self.transport_queue)
-                self.transporterHandler.process_transport_queue(self.db_queue, self.retry_queue)
+                if self.settings['RUN_AS_SERVICE']: 
+                    self.transporterHandler.process_transport_queue(self.db_queue, self.retry_queue)
+                else:
+                    time.sleep(2)
+                    self.transporterHandler.process_transport_queue(self.db_queue)
                 self.dbHandler.process_db_queue()
-                self.retryHandler.process_retry_queue()
-                self.retryHandler.allow_retry(self.transport_queue)
+                if self.settings['RUN_AS_SERVICE']: 
+                    self.retryHandler.process_retry_queue()
+                    self.retryHandler.allow_retry(self.transport_queue)
+                elif self.fsmonitorHandler.peek_monitored_count() == self.dbHandler.peek_transported_count():
+                    self.wsHandler.notify_ws()
+                    break;
                 time.sleep(0.2)
         except Exception, e:
             self.logger.exception("Unhandled exception of type '%s' detected, arguments: '%s'." % (e.__class__.__name__, e.args))
             self.logger.error("Stopping Cloud Sync to ensure the application is stopped in a clean manner.")
             os.kill(os.getpid(), signal.SIGTERM)
+
         self.logger.warning("Cloud Sync stopping...")
 
         # Stop the FSMonitor and wait for its thread to end.
@@ -90,9 +105,19 @@ def run_cloud_sync(settings, restart=False):
         print e.__class__.__name__, e
         del cloud_sync
     else:
-        t = DaemonThreadRunner(cloud_sync, settings['PID_FILE'])
-        t.start()
-        del t
+        if settings['RUN_AS_SERVICE']: 
+            t = DaemonThreadRunner(cloud_sync, settings['PID_FILE'])
+            t.start()
+            del t
+        else:
+            try:
+                cloud_sync.setDaemon(True)
+                cloud_sync.start()
+                while cloud_sync.isAlive():
+                    cloud_sync.join(1)
+            except KeyboardInterrupt, SystemExit:
+                print '\n! Received keyboard interrupt, quitting cloud sync threads.\n'
+                sys.exit()
         del cloud_sync
 
 if __name__ == '__main__':

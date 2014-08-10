@@ -33,3 +33,10 @@ class WSHandler(object):
         else:
             raise Exception("Non-existing event set.")
         self.logger.debug("Sync web service -> 'synced file with web service' file: '%s' (URL: '%s')." % (transported_file, url))
+
+    def notify_ws(self):
+        result = self.syncHelper.notify_explorer()
+        if result or result.success:
+            self.logger.info("Sync web service -> notified web service success!")
+        else:
+            self.logger.info("Sync web service -> notified web service failure!")

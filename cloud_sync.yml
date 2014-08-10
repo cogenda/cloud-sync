@@ -3,6 +3,7 @@
 ########################################################
 SYNC_WS: False
 WS_HOST: 'http://uk.cogenda.com'
+#WS_HOST: 'http://127.0.0.1:8088'
 API_MODIFY_RESOURCE: '/api/modify-resource'
 API_DESTROY_RESOURCE: '/api/destroy-resource'
 API_NOTIFY_EXPLORER: '/api/notify-explorer'
@@ -55,6 +56,7 @@ IGNORE_PATHS: []
 TRANSPORTERS:
     - 'oss'
     - 's3'
-
 # Cloud Sync Upload `private` or `public` file switcher
 IS_PUBLIC: True
+# Cloud Sync run as daemon service or just run once
+RUN_AS_SERVICE: True

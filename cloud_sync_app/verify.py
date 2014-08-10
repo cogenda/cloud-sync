@@ -106,7 +106,8 @@ if __name__ == '__main__':
         threads.append(progress_bar)
         for thread in threads:
             thread.join()
-    except KeyboardInterrupt, Exception:
-        os.kill(os.getpid(), signal.SIGTERM)
+    except KeyboardInterrupt, SystemExit:
+        print '\n! Received keyboard interrupt, quitting verification threads.\n'
+        sys.exit()
 
     print_results()
