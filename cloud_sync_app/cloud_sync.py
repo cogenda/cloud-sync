@@ -60,7 +60,8 @@ class CloudSync(threading.Thread):
                     self.transporterHandler.process_transport_queue(self.db_queue)
                     self.dbHandler.process_db_queue()
                     if self.fsmonitorHandler.peek_monitored_count()*len(self.settings['TRANSPORTERS']) == self.dbHandler.peek_transported_count():
-                        self.wsHandler.notify_ws()
+                        if not self.settings['IS_PUBLIC']:
+                            self.wsHandler.notify_ws()
                         break;
                 time.sleep(0.2)
         except Exception, e:
