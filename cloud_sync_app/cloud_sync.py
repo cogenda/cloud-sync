@@ -52,16 +52,16 @@ class CloudSync(threading.Thread):
                 self.fsmonitorHandler.process_discover_queue(self.transport_queue)
                 if self.settings['RUN_AS_SERVICE']: 
                     self.transporterHandler.process_transport_queue(self.db_queue, self.retry_queue)
+                    self.dbHandler.process_db_queue()
+                    self.retryHandler.process_retry_queue()
+                    self.retryHandler.allow_retry(self.transport_queue)
                 else:
                     time.sleep(2)
                     self.transporterHandler.process_transport_queue(self.db_queue)
-                self.dbHandler.process_db_queue()
-                if self.settings['RUN_AS_SERVICE']: 
-                    self.retryHandler.process_retry_queue()
-                    self.retryHandler.allow_retry(self.transport_queue)
-                elif self.fsmonitorHandler.peek_monitored_count() == self.dbHandler.peek_transported_count():
-                    self.wsHandler.notify_ws()
-                    break;
+                    self.dbHandler.process_db_queue()
+                    if self.fsmonitorHandler.peek_monitored_count()*len(self.settings['TRANSPORTERS']) == self.dbHandler.peek_transported_count():
+                        self.wsHandler.notify_ws()
+                        break;
                 time.sleep(0.2)
         except Exception, e:
             self.logger.exception("Unhandled exception of type '%s' detected, arguments: '%s'." % (e.__class__.__name__, e.args))
