@@ -49,14 +49,13 @@ OSS_STORAGE_BUCKET_NAME: 'cogenda-qd'
 #                 USER SETTINGS                        #           
 ########################################################
 SCAN_PATHS: {
-        '/home/tim/apps/cogenda-web/assets_rel/static': 'static',
-        #'/home/jiltang/tmp/static': 'static',
+        '/Users/tim-tang/Work/downloads': 'downloads',
         }
 IGNORE_PATHS: []
 TRANSPORTERS:
     - 'oss'
     - 's3'
 # Cloud Sync Upload `private` or `public` file switcher
-IS_PUBLIC: True
+IS_PUBLIC: False
 # Cloud Sync run as daemon service or just run once
-RUN_AS_SERVICE: True
+RUN_AS_SERVICE: False

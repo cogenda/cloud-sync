@@ -30,9 +30,8 @@ class CloudSync(threading.Thread):
         self.logger.warning("Cloud Sync is initializing.")
         self.transporterHandler = TransporterHandler(settings, self.logger, self.lock)
         self.dbHandler = DBHandler(settings, self.logger, self.lock)
-        if settings['RUN_AS_SERVICE']: 
-            self.retryHandler = RetryHandler(settings, self.logger, self.lock)
-        else:
+        self.retryHandler = RetryHandler(settings, self.logger, self.lock)
+        if not settings['RUN_AS_SERVICE']:
             self.wsHandler = WSHandler(settings, self.logger)
         self.fsmonitorHandler = FSMonitorHandler(settings, self.logger, self.lock)
         self.settings = settings
@@ -40,9 +39,9 @@ class CloudSync(threading.Thread):
     def __setup(self): 
         self.transport_queue = self.transporterHandler.setup_transporters()
         self.db_queue = self.dbHandler.setup_db()
-        if self.settings['RUN_AS_SERVICE']:
-            self.retry_queue = self.retryHandler.setup_retry()
+        self.retry_queue, self.num_failed_files = self.retryHandler.setup_retry()
         self.fsmonitorHandler.setup_fsmonitor()
+        self.retryHandler.allow_retry(self.transport_queue)
 
     def run(self):
         self.__setup()
@@ -51,16 +50,21 @@ class CloudSync(threading.Thread):
             while not self.die:
                 self.fsmonitorHandler.process_discover_queue(self.transport_queue)
                 if self.settings['RUN_AS_SERVICE']: 
-                    self.transporterHandler.process_transport_queue(self.db_queue, self.retry_queue)
+                    self.transporterHandler.process_transport_queue(self.db_queue, retry_queue=self.retry_queue)
                     self.dbHandler.process_db_queue()
                     self.retryHandler.process_retry_queue()
                     self.retryHandler.allow_retry(self.transport_queue)
                 else:
-                    time.sleep(2)
-                    self.transporterHandler.process_transport_queue(self.db_queue)
+                    time.sleep(1.8)
+                    self.transporterHandler.process_transport_queue(self.db_queue, retry_queue=self.retry_queue) 
                     self.dbHandler.process_db_queue()
-                    if self.fsmonitorHandler.peek_monitored_count()*len(self.settings['TRANSPORTERS']) == self.dbHandler.peek_transported_count():
-                        if not self.settings['IS_PUBLIC']:
+                    self.retryHandler.process_retry_queue()
+                    # Handling run once condition.
+                    total_count = (self.fsmonitorHandler.peek_monitored_count() + self.num_failed_files)*len(self.settings['TRANSPORTERS']) 
+                    actual_count = self.dbHandler.peek_transported_count() + self.transporterHandler.peek_error_transported_count()
+                    #print '######## %d ###### %d' % (total_count, actual_count)
+                    if total_count == actual_count:
+                        if not self.settings['IS_PUBLIC'] and self.dbHandler.peek_transported_count() > 0:
                             self.wsHandler.notify_ws()
                         break;
                 time.sleep(0.2)

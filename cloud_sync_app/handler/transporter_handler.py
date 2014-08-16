@@ -40,7 +40,11 @@ class TransporterHandler(object):
         self.transport_queue = {}
         for server in self.settings['TRANSPORTERS']:
             self.transport_queue[server] = AdvancedQueue()
+        self.error_transported_count = 0
         return self.transport_queue  
+
+    def peek_error_transported_count(self):
+        return self.error_transported_count
 
     def shutdown(self):
         # Stop the transporters and wait for their threads to end.
@@ -233,8 +237,10 @@ class TransporterHandler(object):
 
         if self.retry_queue:
             self.retry_queue.put((input_file, event))
-
-
+            self.lock.acquire()
+            self.error_transported_count += 1
+            self.lock.release()
+        
     def _calculate_transporter_dst(self, src, relative_paths=[]):
         dst = src
         parent_path=None

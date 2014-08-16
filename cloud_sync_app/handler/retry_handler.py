@@ -16,17 +16,17 @@ class RetryHandler(object):
 
     def setup_retry(self):
         self.failed_files = PersistentList("failed_files_list", self.settings['PERSISTENT_DATA_DB'])
-        num_failed_files = len(self.failed_files)
-        self.logger.warning("Setup: initialized 'failed_files' persistent list, contains %d items." % (num_failed_files))
+        self.num_failed_files = len(self.failed_files)
+        self.logger.warning("Setup: initialized 'failed_files' persistent list, contains %d items." % (self.num_failed_files))
         self.retry_queue = Queue.Queue()
-        return self.retry_queue
+        #self.next_retry_files_num = 0
+        return self.retry_queue, self.num_failed_files 
 
     def process_retry_queue(self):
         processed = 0
 
         while processed < self.settings['QUEUE_PROCESS_BATCH_SIZE'] and self.retry_queue.qsize() > 0:
             # Retry queue -> failed files list.
-            # And remove from files in pipeline.
             self.lock.acquire()
             (input_file, event) = self.retry_queue.get()
 
@@ -45,7 +45,6 @@ class RetryHandler(object):
             processed += 1
 
     def allow_retry(self, transport_queue):
-        self.transport_queue = transport_queue
         num_failed_files = len(self.failed_files)
         should_retry = self.last_retry + self.settings['RETRY_INTERVAL'] < time.time()
         
@@ -57,7 +56,7 @@ class RetryHandler(object):
                 item = self.failed_files[processed]
                 failed_items.append(item)
                 for server in self.settings['TRANSPORTERS']:
-                    self.transport_queue[server].put((item[0], item[1], server, item[0]))
+                    transport_queue[server].put((item[0], item[1], server, item[0]))
                 processed += 1
             
             for item in failed_items:
