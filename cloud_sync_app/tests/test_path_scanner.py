@@ -6,7 +6,7 @@ from sets import Set
 
 if __name__ == "__main__":
     # Sample usage
-    path = unicode("/home/jiltang/work/test",'utf-8')
+    path = unicode("/Users/tim-tang/Work/cogenda-web/assets_rel/static/",'utf-8')
     db = sqlite3.connect("pathscanner.db")
     db.text_factory = unicode # This is the default, but we set it explicitly, just to be sure.
     ignored_dirs = ["CVS", ".svn"]

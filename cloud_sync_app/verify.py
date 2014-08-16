@@ -95,17 +95,18 @@ if __name__ == '__main__':
         url_queue.put((url, input_file, server))
 
     try:
-        for idx in range(WORKER_NUM):
-            crawler = threading.Thread(target=worker, args = (url_queue,)) 
-            crawler.start()
-            threads.append(crawler)
+        if len(dbcur.fetchall()) > 0:
+            for idx in range(WORKER_NUM):
+                crawler = threading.Thread(target=worker, args = (url_queue,)) 
+                crawler.start()
+                threads.append(crawler)
 
-        progress_bar = threading.Thread(target=display_progress, args =(progress_queue,))
-        progress_bar.setDaemon(True)
-        progress_bar.start() 
-        threads.append(progress_bar)
-        for thread in threads:
-            thread.join()
+            progress_bar = threading.Thread(target=display_progress, args =(progress_queue,))
+            progress_bar.setDaemon(True)
+            progress_bar.start() 
+            threads.append(progress_bar)
+            for thread in threads:
+                thread.join()
     except KeyboardInterrupt, SystemExit:
         print '\n! Received keyboard interrupt, quitting verification threads.\n'
         sys.exit()
