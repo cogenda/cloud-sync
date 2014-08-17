@@ -105,7 +105,8 @@ class TransporterHandler(object):
                             )
                     curried_error_callback = curry(self._transporter_error_callback,
                             input_file=input_file,
-                            event=event
+                            event=event,
+                            server=server
                             )
 
                     src = output_file
@@ -229,14 +230,14 @@ class TransporterHandler(object):
         self.logger.info("Transport queue -> DB queue: '%s' (server: '%s')." % (input_file, server))
 
 
-    def _transporter_error_callback(self, src, dst, action, input_file, event):
+    def _transporter_error_callback(self, src, dst, action, input_file, event, server):
         if self.settings['CALLBACKS_CONSOLE_OUTPUT']:
             print """TRANSPORTER ERROR CALLBACK FIRED:
                     (curried): input_file='%s'
                     (curried): event=%d""" % (input_file, event)
 
         if self.retry_queue:
-            self.retry_queue.put((input_file, event))
+            self.retry_queue.put((input_file, event, server))
             self.lock.acquire()
             self.error_transported_count += 1
             self.lock.release()

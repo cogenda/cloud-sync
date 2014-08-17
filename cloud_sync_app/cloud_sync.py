@@ -38,7 +38,7 @@ class CloudSync(threading.Thread):
         self.settings = settings
         boto.config.add_section('Boto')
         boto.config.set('Boto','http_socket_timeout','5')
-        boto.config.set('Boto','num_retries','2')
+        boto.config.set('Boto','num_retries','1')
 
     def __setup(self): 
         self.transport_queue = self.transporterHandler.setup_transporters()
@@ -64,7 +64,7 @@ class CloudSync(threading.Thread):
                     self.dbHandler.process_db_queue()
                     self.retryHandler.process_retry_queue()
                     # Handling run once condition.
-                    total_count = (self.fsmonitorHandler.peek_monitored_count() + self.num_failed_files)*len(self.settings['TRANSPORTERS']) 
+                    total_count = (self.fsmonitorHandler.peek_monitored_count())*len(self.settings['TRANSPORTERS']) + self.num_failed_files
                     actual_count = self.dbHandler.peek_transported_count() + self.transporterHandler.peek_error_transported_count()
                     #print '######## %d ###### %d' % (total_count, actual_count)
                     if total_count == actual_count:

@@ -28,10 +28,10 @@ class RetryHandler(object):
         while processed < self.settings['QUEUE_PROCESS_BATCH_SIZE'] and self.retry_queue.qsize() > 0:
             # Retry queue -> failed files list.
             self.lock.acquire()
-            (input_file, event) = self.retry_queue.get()
+            (input_file, event, server) = self.retry_queue.get()
 
             if (input_file, event) not in self.failed_files:
-                self.failed_files.append((input_file, event))
+                self.failed_files.append((input_file, event, server))
                 already_in_failed_files = False
             else:
                 already_in_failed_files = True
@@ -56,7 +56,8 @@ class RetryHandler(object):
                 item = self.failed_files[processed]
                 failed_items.append(item)
                 for server in self.settings['TRANSPORTERS']:
-                    transport_queue[server].put((item[0], item[1], server, item[0]))
+                    if server == item[2]:
+                        transport_queue[server].put((item[0], item[1], server, item[0]))
                 processed += 1
             
             for item in failed_items:
