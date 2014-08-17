@@ -4,6 +4,7 @@
 
 from .transporter import *
 from storages.backends.s3boto import S3BotoStorage
+import boto
 
 TRANSPORTER_CLASS = "TransporterS3"
 
@@ -13,7 +14,9 @@ class TransporterS3(Transporter):
 
     def __init__(self, conf, callback, error_callback, parent_logger=None):
         Transporter.__init__(self, callback, error_callback, parent_logger)
-
+        boto.config.add_section('Boto')
+        boto.config.set('Boto','http_socket_timeout','5')
+        boto.config.set('Boto','num_retries','2')
         default_acl = 'public-read'
         default_bucket = conf['AWS_STORAGE_BUCKET_NAME']
         default_querystring_auth=False
