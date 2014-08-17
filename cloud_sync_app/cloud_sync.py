@@ -12,6 +12,7 @@ from .daemon_thread_runner import *
 from .handler.ws_handler import *
 import yaml
 import time
+import boto
 
 # Define exceptions.
 class CloudSyncError(Exception): pass
@@ -35,6 +36,9 @@ class CloudSync(threading.Thread):
             self.wsHandler = WSHandler(settings, self.logger)
         self.fsmonitorHandler = FSMonitorHandler(settings, self.logger, self.lock)
         self.settings = settings
+        boto.config.add_section('Boto')
+        boto.config.set('Boto','http_socket_timeout','5')
+        boto.config.set('Boto','num_retries','2')
 
     def __setup(self): 
         self.transport_queue = self.transporterHandler.setup_transporters()
