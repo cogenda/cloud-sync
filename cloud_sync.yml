@@ -57,6 +57,6 @@ TRANSPORTERS:
     - 'oss'
     - 's3'
 # Cloud Sync Upload `private` or `public` file switcher
-IS_PUBLIC: False
+IS_PUBLIC: True 
 # Cloud Sync run as daemon service or just run once
-RUN_AS_SERVICE: False
+RUN_AS_SERVICE: True
