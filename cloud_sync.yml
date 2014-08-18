@@ -49,8 +49,8 @@ OSS_STORAGE_BUCKET_NAME: 'cogenda-qd'
 #                 USER SETTINGS                        #           
 ########################################################
 SCAN_PATHS: {
-        #'/home/tim/apps/cogenda-web/assets_rel/static': 'static',
-        '/Users/tim-tang/Work/downloads': 'downloads',
+        '/home/tim/apps/cogenda-web/assets_rel/static': 'static',
+        #'/Users/tim-tang/Work/downloads': 'downloads',
         }
 IGNORE_PATHS: []
 TRANSPORTERS:
