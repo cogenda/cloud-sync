@@ -29,3 +29,6 @@ clean-pyc:
 	@find . -name '*.pyo' -exec rm -f {} +
 	@find . -name '*.DS_Store' -exec rm -f {} +
 	@find . -name '~' -exec rm -f {} +
+
+pylint:
+	@flake8 cloud_sync_app

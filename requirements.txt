@@ -7,3 +7,6 @@ PyYAML>=3.11
 
 # Auto deploy tool
 fabric >=1.5
+
+# static code checker
+flake8
