@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
 
-import os
-import sys
 import time
 import Queue
 from ..persistent.persistent_list import *
@@ -19,8 +17,8 @@ class RetryHandler(object):
         self.num_failed_files = len(self.failed_files)
         self.logger.warning("Setup: initialized 'failed_files' persistent list, contains %d items." % (self.num_failed_files))
         self.retry_queue = Queue.Queue()
-        #self.next_retry_files_num = 0
-        return self.retry_queue, self.num_failed_files 
+        # self.next_retry_files_num = 0
+        return self.retry_queue, self.num_failed_files
 
     def process_retry_queue(self):
         processed = 0
@@ -47,7 +45,7 @@ class RetryHandler(object):
     def allow_retry(self, transport_queue):
         num_failed_files = len(self.failed_files)
         should_retry = self.last_retry + self.settings['RETRY_INTERVAL'] < time.time()
-        
+
         if num_failed_files > 0 and should_retry:
             failed_items = []
 
@@ -59,7 +57,7 @@ class RetryHandler(object):
                     if server == item[2]:
                         transport_queue[server].put((item[0], item[1], server, item[0]))
                 processed += 1
-            
+
             for item in failed_items:
                 self.failed_files.remove(item)
 

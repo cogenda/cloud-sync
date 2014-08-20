@@ -1,12 +1,12 @@
 # -*- coding:utf-8 -*-
 
 import os
-import sys
 from ..utils.advanced_queue import AdvancedQueue
 from ..fsmonitor.fsmonitor import *
 from ..transporter.transporter import Transporter, ConnectionError
 
-class TransporterAvailabilityTestError(Exception): pass
+class TransporterAvailabilityTestError(Exception):
+    pass
 
 # Copied from django.utils.functional
 def curry(_curried_func, *args, **kwargs):

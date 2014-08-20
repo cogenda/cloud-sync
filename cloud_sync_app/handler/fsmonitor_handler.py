@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 
-import os, sys
-import threading
+import os
 import stat
 from ..fsmonitor.fsmonitor import *
 
@@ -14,7 +13,7 @@ class FSMonitorHandler(object):
         self.logger = logger
 
     def setup_fsmonitor(self):
-        self.discover_queue  = Queue.Queue()
+        self.discover_queue = Queue.Queue()
         self.monitored_file_count = 0
         # Initialize the FSMonitor.
         fsmonitor_class = get_fsmonitor()
@@ -29,7 +28,7 @@ class FSMonitorHandler(object):
     def bootstrap(self):
         self.fsmonitor.start()
         self.logger.warning("Fully up and running now.")
-        
+
     def peek_monitored_count(self):
         return self.monitored_file_count
 
