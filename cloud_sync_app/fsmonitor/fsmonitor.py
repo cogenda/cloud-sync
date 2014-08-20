@@ -3,7 +3,6 @@
 """
 File system monitor
 """
-import platform
 import sqlite3
 import threading
 import Queue

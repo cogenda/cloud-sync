@@ -13,21 +13,20 @@ import time
 class DaemonThreadRunner(object):
 
     pidfile_check_interval = 60
-    pidfile_permissions    = 0600
+    pidfile_permissions = 0600
 
     stopped_in_console = False
 
     def __init__(self, thread, pidfile):
-        self.thread             = thread
-        self.running            = False
-        self.pidfile            = os.path.expanduser(pidfile)
+        self.thread = thread
+        self.running = False
+        self.pidfile = os.path.expanduser(pidfile)
         self.last_pidfile_check = 0
 
         # Configure signal handler.
-        signal.signal(signal.SIGINT,  self.handle_signal)
+        signal.signal(signal.SIGINT, self.handle_signal)
         signal.signal(signal.SIGTSTP, self.handle_signal)
         signal.signal(signal.SIGTERM, self.handle_signal)
-
 
     def start(self):
         self.write_pid_file(self.pidfile)
@@ -46,7 +45,6 @@ class DaemonThreadRunner(object):
         if os.path.isfile(self.pidfile):
             os.remove(self.pidfile)
 
-
     def handle_signal(self, signalNumber, frame):
         # Ctrl+C = SIGINT, Ctrl+X = SIGTSTP; these are entered by the user
         # who's looking at Cloud Sync's activity in the console. Hence,
@@ -57,13 +55,11 @@ class DaemonThreadRunner(object):
         self.thread.join()
         self.running = False
 
-
     @classmethod
     def write_pid_file(cls, pidfile):
         pid = os.getpid()
         open(pidfile, 'w+').write(str(pid))
         os.chmod(pidfile, cls.pidfile_permissions)
-
 
     def update_pid_file(self):
         # Recreate the file when it is deleted.
@@ -74,4 +70,3 @@ class DaemonThreadRunner(object):
         if self.last_pidfile_check + self.pidfile_check_interval < time.time():
             self.write_pid_file(self.pidfile)
             self.last_pidfile_check = time.time()
-

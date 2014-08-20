@@ -15,8 +15,10 @@ import time
 import boto
 
 # Define exceptions.
-class CloudSyncError(Exception): pass
-class CloudSyncInitError(CloudSyncError): pass
+class CloudSyncError(Exception):
+    pass
+class CloudSyncInitError(CloudSyncError):
+    pass
 
 class CloudSync(threading.Thread):
 
@@ -37,10 +39,10 @@ class CloudSync(threading.Thread):
         self.fsmonitorHandler = FSMonitorHandler(settings, self.logger, self.lock)
         self.settings = settings
         boto.config.add_section('Boto')
-        boto.config.set('Boto','http_socket_timeout','5')
-        boto.config.set('Boto','num_retries','1')
+        boto.config.set('Boto', 'http_socket_timeout', '5')
+        boto.config.set('Boto', 'num_retries', '1')
 
-    def __setup(self): 
+    def __setup(self):
         self.transport_queue = self.transporterHandler.setup_transporters()
         self.db_queue = self.dbHandler.setup_db()
         self.retry_queue, self.num_failed_files = self.retryHandler.setup_retry()
@@ -53,24 +55,24 @@ class CloudSync(threading.Thread):
         try:
             while not self.die:
                 self.fsmonitorHandler.process_discover_queue(self.transport_queue)
-                if self.settings['RUN_AS_SERVICE']: 
+                if self.settings['RUN_AS_SERVICE']:
                     self.transporterHandler.process_transport_queue(self.db_queue, retry_queue=self.retry_queue)
                     self.dbHandler.process_db_queue()
                     self.retryHandler.process_retry_queue()
                     self.retryHandler.allow_retry(self.transport_queue)
                 else:
                     time.sleep(1.8)
-                    self.transporterHandler.process_transport_queue(self.db_queue, retry_queue=self.retry_queue) 
+                    self.transporterHandler.process_transport_queue(self.db_queue, retry_queue=self.retry_queue)
                     self.dbHandler.process_db_queue()
                     self.retryHandler.process_retry_queue()
                     # Handling run once condition.
                     total_count = (self.fsmonitorHandler.peek_monitored_count())*len(self.settings['TRANSPORTERS']) + self.num_failed_files
                     actual_count = self.dbHandler.peek_transported_count() + self.transporterHandler.peek_error_transported_count()
-                    #print '######## %d ###### %d' % (total_count, actual_count)
+                    # print '######## %d ###### %d' % (total_count, actual_count)
                     if total_count == actual_count:
                         if not self.settings['IS_PUBLIC'] and self.dbHandler.peek_transported_count() > 0:
                             self.wsHandler.notify_ws()
-                        break;
+                        break
                 time.sleep(0.2)
         except Exception, e:
             self.logger.exception("Unhandled exception of type '%s' detected, arguments: '%s'." % (e.__class__.__name__, e.args))
@@ -83,7 +85,7 @@ class CloudSync(threading.Thread):
         self.fsmonitorHandler.shutdown()
 
         # Stop the transporters and wait for their threads to end.
-        self.transporterHandler.shutdown() 
+        self.transporterHandler.shutdown()
 
         # Log information about the synced files DB.
         self.dbHandler.shutdown()
@@ -114,7 +116,7 @@ def run_cloud_sync(settings, restart=False):
         print e.__class__.__name__, e
         del cloud_sync
     else:
-        if settings['RUN_AS_SERVICE']: 
+        if settings['RUN_AS_SERVICE']:
             t = DaemonThreadRunner(cloud_sync, settings['PID_FILE'])
             t.start()
             del t
@@ -124,10 +126,9 @@ def run_cloud_sync(settings, restart=False):
                 cloud_sync.start()
                 while cloud_sync.isAlive():
                     cloud_sync.join(1)
-            except KeyboardInterrupt, SystemExit:
+            except KeyboardInterrupt:
                 print '\n! Received keyboard interrupt, quitting cloud sync threads.\n'
                 sys.exit()
-        del cloud_sync
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -136,7 +137,7 @@ if __name__ == '__main__':
         print 'Cloud Sync configuration file [%s] not exists.' % sys.argv[1]
         sys.exist(2)
 
-    if not 'DJANGO_SETTINGS_MODULE' in os.environ:
+    if 'DJANGO_SETTINGS_MODULE' not in os.environ:
         os.environ['DJANGO_SETTINGS_MODULE'] = 'cloud_sync_app.django_storage_module'
 
     conf = open(sys.argv[1])
@@ -154,7 +155,7 @@ if __name__ == '__main__':
         # by the user in the console. See DaemonThreadRunner.handle_signal()
         # for details.
         while True and not DaemonThreadRunner.stopped_in_console:
-            # Make sure there's always a PID file, even when Cloud Sync 
+            # Make sure there's always a PID file, even when Cloud Sync
             # technically isn't running.
             DaemonThreadRunner.write_pid_file(os.path.expanduser(settings['PID_FILE']))
             time.sleep(settings['RESTART_INTERVAL'])

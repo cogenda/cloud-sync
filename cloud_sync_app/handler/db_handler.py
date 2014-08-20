@@ -1,9 +1,8 @@
 # -*- coding:utf-8 -*-
 
-import os, sys
+import os
 import sqlite3
 from ..fsmonitor.fsmonitor import *
-from ..helper.sync_helper import SyncHelper
 
 class DBHandler(object):
 
@@ -17,7 +16,7 @@ class DBHandler(object):
         self.db_queue = Queue.Queue()
         # Create connection to synced files DB.
         self.dbcon = sqlite3.connect(self.settings['SYNCED_FILES_DB'])
-        self.dbcon.text_factory = unicode # This is the default, but we set it explicitly, just to be sure.
+        self.dbcon.text_factory = unicode
         self.dbcur = self.dbcon.cursor()
         self.dbcur.execute("CREATE TABLE IF NOT EXISTS synced_files(input_file text, transported_file_basename text, url text, server text)")
         self.dbcur.execute("CREATE UNIQUE INDEX IF NOT EXISTS file_unique_per_server ON synced_files (input_file, server)")
@@ -28,7 +27,7 @@ class DBHandler(object):
         return self.db_queue
 
     def peek_transported_count(self):
-        return self.transported_file_count 
+        return self.transported_file_count
 
     def shutdown(self):
         # Log information about the synced files DB.
@@ -37,23 +36,13 @@ class DBHandler(object):
         self.logger.warning("Synced files DB contains metadata for [%d] synced files." % (num_synced_files))
 
     def process_db_queue(self):
-        processed = 0 
-
-        """
-        syncHelper = SyncHelper(
-                ws_shared_secret= os.environ.get('WS_SHARED_SECRET', 'cogenda-ws-secret'),
-                ws_host=self.settings['WS_HOST'],
-                api_modify_resource=self.settings['API_MODIFY_RESOURCE'],
-                api_notify_explorer=self.settings['API_NOTIFY_EXPLORER'],
-                api_destroy_resource=self.settings['API_DESTROY_RESOURCE'])
-        """
-
+        processed = 0
         while processed < self.settings['QUEUE_PROCESS_BATCH_SIZE'] and self.db_queue.qsize() > 0:
             # DB queue -> database.
             self.lock.acquire()
             (input_file, event, processed_for_server, output_file, transported_file, url, server) = self.db_queue.get()
             self.lock.release()
-            # Commit the result to the database.            
+            # Commit the result to the database.
             transported_file_basename = os.path.basename(output_file)
             if event == FSMonitor.CREATED:
                 try:
@@ -68,8 +57,8 @@ class DBHandler(object):
                     # Look up the transported file's base name. This
                     # might be different from the input file's base
                     # name due to processing.
-                    self.dbcur.execute("SELECT transported_file_basename FROM synced_files WHERE input_file=? AND server=?", (input_file, server))
-                    old_transport_file_basename = self.dbcur.fetchone()[0]
+                    # self.dbcur.execute("SELECT transported_file_basename FROM synced_files WHERE input_file=? AND server=?", (input_file, server))
+                    # old_transport_file_basename = self.dbcur.fetchone()[0]
                     # Update the transported_file_basename and url fields for
                     # the input_file that has been transported.
                     self.dbcur.execute("UPDATE synced_files SET transported_file_basename=?, url=? WHERE input_file=? AND server=?", (transported_file_basename, url, input_file, server))
@@ -83,6 +72,6 @@ class DBHandler(object):
             else:
                 raise Exception("Non-existing event set.")
             self.logger.debug("DB queue -> 'synced files' DB: '%s' (URL: '%s')." % (input_file, url))
-            self.transported_file_count +=1
+            self.transported_file_count += 1
 
         processed += 1
