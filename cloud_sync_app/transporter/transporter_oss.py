@@ -9,7 +9,7 @@ TRANSPORTER_CLASS = "TransporterOSS"
 
 class TransporterOSS(Transporter):
 
-    name='OSS'
+    name = 'OSS'
 
     def __init__(self, conf, callback, error_callback, parent_logger=None):
         Transporter.__init__(self, callback, error_callback, parent_logger)
@@ -21,8 +21,8 @@ class TransporterOSS(Transporter):
 
         try:
             self.storage = OSSStorage(
-                    bucket= default_bucket.encode('utf-8'),
-                    acl = default_acl
-                    )
-        except Exception, e:            
+                bucket=default_bucket.encode('utf-8'),
+                acl=default_acl
+            )
+        except Exception, e:
             raise ConnectionError(e)

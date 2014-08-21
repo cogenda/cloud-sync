@@ -21,7 +21,14 @@ class SyncHelper(object):
     ALL_USER_PKG = 'alluser/software-pkg'
     PRIVATE = 'private/'
 
-    def __init__(self, ws_shared_secret='cogenda-ws-secret', ws_host='http://localhost:8088', api_modify_resource='/api/modify-resource', api_notify_explorer='/api/notify-explorer', api_destroy_resource='/api/destroy-resource'):
+    def __init__(
+        self,
+        ws_shared_secret='cogenda-ws-secret',
+        ws_host='http://localhost:8088',
+        api_modify_resource='/api/modify-resource',
+        api_notify_explorer='/api/notify-explorer',
+        api_destroy_resource='/api/destroy-resource'
+    ):
         self.ws_shared_secret = ws_shared_secret
         self.ws_host = ws_host
         self.api_modify_resource = api_modify_resource

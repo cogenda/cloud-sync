@@ -41,7 +41,7 @@ class TransporterHandler(object):
         for server in self.settings['TRANSPORTERS']:
             self.transport_queue[server] = AdvancedQueue()
         self.error_transported_count = 0
-        return self.transport_queue  
+        return self.transport_queue
 
     def peek_error_transported_count(self):
         return self.error_transported_count
@@ -55,12 +55,11 @@ class TransporterHandler(object):
                     transporter.join()
                 self.logger.warning("Stopped transporters for the '%s' server." % (server))
 
-
     def process_transport_queue(self, db_queue, retry_queue=None):
         self.db_queue = db_queue
         self.retry_queue = retry_queue
         for server in self.settings['TRANSPORTERS']:
-            processed = 0 
+            processed = 0
             while processed < self.settings['QUEUE_PROCESS_BATCH_SIZE'] and self.transport_queue[server].qsize() > 0:
                 # Peek at the first item from the queue. We cannot get the
                 # item from the queue, because there may be no transporter
@@ -83,10 +82,10 @@ class TransporterHandler(object):
                     # to the Transporter's DELETE action.
                     action = Transporter.DELETE
                 else:
-                    raise Exception("Non-existing event set.") 
+                    raise Exception("Non-existing event set.")
 
                 (id, place_in_queue, transporter) = self._get_transporter(server)
-                if not transporter is None:
+                if transporter is not None:
                     # A transporter is available!
                     # Transport queue -> Transporter -> transporter_callback -> db queue.
                     self.lock.acquire()
@@ -97,17 +96,19 @@ class TransporterHandler(object):
                     # to the transporter callback without passing it to the
                     # transporter itself (which cannot handle sending
                     # additional data to its callback functions).
-                    curried_callback = curry(self._transporter_callback,
-                            input_file=input_file,
-                            event=event,
-                            processed_for_server=processed_for_server,
-                            server=server
-                            )
-                    curried_error_callback = curry(self._transporter_error_callback,
-                            input_file=input_file,
-                            event=event,
-                            server=server
-                            )
+                    curried_callback = curry(
+                        self._transporter_callback,
+                        input_file=input_file,
+                        event=event,
+                        processed_for_server=processed_for_server,
+                        server=server
+                    )
+                    curried_error_callback = curry(
+                        self._transporter_error_callback,
+                        input_file=input_file,
+                        event=event,
+                        server=server
+                    )
 
                     src = output_file
                     relative_paths = self.settings['SCAN_PATHS'].keys()
@@ -122,7 +123,6 @@ class TransporterHandler(object):
                     break
 
                 processed += 1
-
 
     def _get_transporter(self, server):
         """get a transporter; if one is ready for new work, use that one,
@@ -146,8 +146,8 @@ class TransporterHandler(object):
         num_connections = len(self.transporters[server])
         max_connections = self.settings['MAX_TRANSPORTER_POOL_SIZE']
         if max_connections == 0 or num_connections < max_connections:
-            transporter    = self._make_transporter(server)
-            id             = len(self.transporters[server]) - 1
+            transporter = self._make_transporter(server)
+            id = len(self.transporters[server]) - 1
             # If a transporter was succesfully created, add it to the pool.
             if transporter:
                 self.transporters[server].append(transporter)
@@ -205,12 +205,12 @@ class TransporterHandler(object):
                 module = __import__(module_name, globals(), locals(), [classname])
                 transporter_class = getattr(module, classname)
             except AttributeError:
-                self.logger.error("The Transporter module '%s' was found, but its Transporter class '%s' could not be found."  % (module_name, classname))
+                self.logger.error("The Transporter module '%s' was found, but its Transporter class '%s' could not be found." % (module_name, classname))
         return transporter_class
 
     def _transporter_callback(self, src, dst, url, action, input_file, event, processed_for_server, server):
         # Map Transporter's variable names to ours.
-        output_file      = src
+        output_file = src
         transported_file = dst
 
         if self.settings['CALLBACKS_CONSOLE_OUTPUT']:
@@ -229,7 +229,6 @@ class TransporterHandler(object):
         self.lock.release()
         self.logger.info("Transport queue -> DB queue: '%s' (server: '%s')." % (input_file, server))
 
-
     def _transporter_error_callback(self, src, dst, action, input_file, event, server):
         if self.settings['CALLBACKS_CONSOLE_OUTPUT']:
             print """TRANSPORTER ERROR CALLBACK FIRED:
@@ -241,10 +240,10 @@ class TransporterHandler(object):
             self.lock.acquire()
             self.error_transported_count += 1
             self.lock.release()
-        
+
     def _calculate_transporter_dst(self, src, relative_paths=[]):
         dst = src
-        parent_path=None
+        parent_path = None
 
         # Strip off any relative paths.
         for relative_path in relative_paths:
@@ -257,8 +256,7 @@ class TransporterHandler(object):
         dst = dst.lstrip(os.sep)
 
         # Prepend any possible parent path.
-        if not parent_path is None:
+        if parent_path is not None:
             dst = os.path.join(parent_path, dst)
 
         return dst
-
