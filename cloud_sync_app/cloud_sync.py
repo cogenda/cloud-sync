@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 """ Cloud Sync App Main """
-
+import sys
 import threading
 from .handler.transporter_handler import *
 from .handler.logger_handler import *
