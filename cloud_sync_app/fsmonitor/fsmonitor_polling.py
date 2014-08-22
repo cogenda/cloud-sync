@@ -9,7 +9,8 @@ from fsmonitor import *
 import time
 
 # Define exceptions.
-class FSMonitorPollingError(FSMonitorError): pass
+class FSMonitorPollingError(FSMonitorError):
+    pass
 
 
 class FSMonitorPolling(FSMonitor):
@@ -20,7 +21,6 @@ class FSMonitorPolling(FSMonitor):
     def __init__(self, callback, persistent=True, trigger_events_for_initial_scan=False, ignored_dirs=[], dbfile="fsmonitor.db", parent_logger=None):
         FSMonitor.__init__(self, callback, True, trigger_events_for_initial_scan, ignored_dirs, dbfile, parent_logger)
         self.logger.info("FSMonitor class used: FSMonitorPolling.")
-
 
     def __add_dir(self, path, event_mask):
         """override of FSMonitor.__add_dir()"""
@@ -42,12 +42,10 @@ class FSMonitorPolling(FSMonitor):
 
         return self.monitored_paths[path]
 
-
     def __remove_dir(self, path):
         """override of FSMonitor.__remove_dir()"""
         if path in self.monitored_paths.keys():
             del self.monitored_paths[path]
-
 
     def run(self):
         # Setup. Ensure that this isn't interleaved with any other thread, so
@@ -61,7 +59,6 @@ class FSMonitorPolling(FSMonitor):
             # Sleep some time.
             time.sleep(self.__class__.interval)
 
-
     def stop(self):
         """override of FSMonitor.stop()"""
 
@@ -73,7 +70,6 @@ class FSMonitorPolling(FSMonitor):
         # Stop monitoring each monitored path.
         for path in self.monitored_paths.keys():
             self.__remove_dir(path)
-
 
     def __process_queues(self):
         # Die when asked to.

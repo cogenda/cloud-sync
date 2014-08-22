@@ -19,21 +19,19 @@ Instructions:
 
 import os
 import stat
-import sqlite3
 from sets import Set
 
 
 class PathScanner(object):
     """scan paths for changes, persistent storage using SQLite"""
     def __init__(self, dbcon, ignored_dirs=[], table="pathscanner", commit_interval=50):
-        self.dbcon                  = dbcon
-        self.dbcur                  = dbcon.cursor()
-        self.ignored_dirs           = ignored_dirs
-        self.table                  = table
+        self.dbcon = dbcon
+        self.dbcur = dbcon.cursor()
+        self.ignored_dirs = ignored_dirs
+        self.table = table
         self.uncommitted_statements = 0
-        self.commit_interval        = commit_interval
+        self.commit_interval = commit_interval
         self.__prepare_db()
-
 
     def __prepare_db(self):
         """prepare the database (create the table structure)"""
@@ -41,7 +39,6 @@ class PathScanner(object):
         self.dbcur.execute("CREATE TABLE IF NOT EXISTS %s(path text, filename text, mtime integer)" % (self.table))
         self.dbcur.execute("CREATE UNIQUE INDEX IF NOT EXISTS file_unique_per_path ON %s (path, filename)" % (self.table))
         self.dbcon.commit()
-
 
     def __walktree(self, path):
         rows = []
@@ -52,10 +49,9 @@ class PathScanner(object):
                     yield childrows
         yield rows
 
-
     def __listdir(self, path):
-        """list all the files in a directory
-        
+        """
+        list all the files in a directory
         Returns (path, filename, mtime, is_dir) tuples.
         """
 
@@ -85,10 +81,9 @@ class PathScanner(object):
                 continue
             yield row
 
-
     def initial_scan(self, path):
-        """perform the initial scan
-        
+        """
+        perform the initial scan
         Returns False if there is already data available for this path.
         """
         assert type(path) == type(u'.')
@@ -97,10 +92,9 @@ class PathScanner(object):
         self.dbcur.execute("SELECT COUNT(filename) FROM %s WHERE path=?" % (self.table), (path,))
         if self.dbcur.fetchone()[0] > 0:
             return False
-        
+
         for files in self.__walktree(path):
             self.add_files(files)
-
 
     def purge_path(self, path):
         """purge the metadata for a given path and all its subdirectories"""
@@ -110,14 +104,11 @@ class PathScanner(object):
         self.dbcur.execute("VACUUM %s" % (self.table))
         self.dbcon.commit()
 
-
     def add_files(self, files):
         """add file metadata to the database
-        
         Expected format: a set of (path, filename, mtime) tuples.
         """
         self.update_files(files)
-
 
     def update_files(self, files):
         """update file metadata in the database
@@ -135,10 +126,8 @@ class PathScanner(object):
         # Commit the remaining rows.
         self.__db_batched_commit(True)
 
-
     def delete_files(self, files):
         """delete file metadata from the database
-
         Expected format: a set of (path, filename) tuples.
         """
 
@@ -148,23 +137,18 @@ class PathScanner(object):
         # Commit the remaining rows.
         self.__db_batched_commit(True)
 
-
     def __db_batched_commit(self, force=False):
         """docstring for __db_commit"""
         # Commit to the database in batches, to reduce concurrency: collect
         # self.commit_interval rows, then commit.
-        
         self.uncommitted_statements += 1
         if force == True or self.uncommitted_statements == self.commit_interval:
             self.dbcon.commit()
             self.uncommitted_rows = 0
-            
 
     def scan(self, path):
         """scan a directory (without recursion!) for changes
-        
         The database is also updated to reflect the new situation, of course.
-
         By design, so that this function can be used by scan_tree():
         - Cannot detect newly created directory trees.
         - Can detect deleted directory trees.
@@ -209,7 +193,6 @@ class PathScanner(object):
 
         return scan_result
 
-
     def scan_tree(self, path):
         """scan a directory tree for changes"""
         assert type(path) == type(u'.')
@@ -231,13 +214,10 @@ class PathScanner(object):
                 for subpath, subresult in self.scan_tree(os.path.join(path, filename)):
                     yield (subpath, subresult)
 
-
     def __scanhelper(self, path, old_files, new_files):
         """helper function for scan()
-
         old_files and new_files should be dictionaries of (filename, mtime)
         tuples, keyed by filename
-
         Returns a dictionary of sets of filenames with the keys "created",
         "deleted" and "modified".
         """

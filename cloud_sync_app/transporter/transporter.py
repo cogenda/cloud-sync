@@ -8,29 +8,28 @@ from django.core.files import File
 
 
 # Define exceptions.
-class TransporterError(Exception): pass
-class InvalidCallbackError(TransporterError): pass
-class ConnectionError(TransporterError): pass
-class InvalidActionError(TransporterError): pass
-
+class TransporterError(Exception):
+    pass
+class InvalidCallbackError(TransporterError):
+    pass
+class ConnectionError(TransporterError):
+    pass
+class InvalidActionError(TransporterError):
+    pass
 
 import threading
 import Queue
 import time
-import os.path
 import logging
-from sets import Set, ImmutableSet
 
 
 class Transporter(threading.Thread):
     """threaded abstraction around a Django Storage subclass"""
 
-
     ACTIONS = {
-        "ADD_MODIFY" : 0x00000001,
-        "DELETE"     : 0x00000002,
+        "ADD_MODIFY": 0x00000001,
+        "DELETE": 0x00000002,
     }
-
 
     def __init__(self, callback, error_callback, parent_logger):
         if not callable(callback):
@@ -38,16 +37,15 @@ class Transporter(threading.Thread):
         if not callable(error_callback):
             raise InvalidCallbackError("error_callback function is not callable")
 
-        self.storage        = None
-        self.lock           = threading.Lock()
-        self.queue          = Queue.Queue()
-        self.callback       = callback
+        self.storage = None
+        self.lock = threading.Lock()
+        self.queue = Queue.Queue()
+        self.callback = callback
         self.error_callback = error_callback
-        self.logger         = logging.getLogger(".".join([parent_logger, "Transporter"]))
-        self.die            = False
+        self.logger = logging.getLogger(".".join([parent_logger, "Transporter"]))
+        self.die = False
 
         threading.Thread.__init__(self, name="TransporterThread")
-
 
     def run(self):
         while not self.die:
@@ -82,7 +80,7 @@ class Transporter(threading.Thread):
                     # Call the callback function. Use the callback function
                     # defined for this Transporter (self.callback), unless
                     # an alternative one was defined for this file (callback).
-                    if not callback is None:
+                    if callback is not None:
                         callback(src, dst, url, action)
                     else:
                         self.callback(src, dst, url, action)
@@ -95,22 +93,19 @@ class Transporter(threading.Thread):
                     # function defined for this Transporter
                     # (self.error_callback), unless an alternative one was
                     # defined for this file (error_callback).
-                    if not callback is None:
+                    if callback is not None:
                         error_callback(src, dst, action)
                     else:
                         self.error_callback(src, dst, action)
-
 
     def alter_url(self, url):
         """allow some classes to alter the generated URL"""
         return url
 
-
     def stop(self):
         self.lock.acquire()
         self.die = True
         self.lock.release()
-
 
     def sync_file(self, src, dst=None, action=None, callback=None, error_callback=None):
         # Set the default value here because Python won't allow it sooner.
@@ -129,13 +124,11 @@ class Transporter(threading.Thread):
         self.queue.put((src, dst, action, callback, error_callback))
         self.lock.release()
 
-
     def qsize(self):
         self.lock.acquire()
         qsize = self.queue.qsize()
         self.lock.release()
         return qsize
-
 
 # Make EVENTS' members directly accessible through the class dictionary.
 for name, mask in Transporter.ACTIONS.iteritems():
