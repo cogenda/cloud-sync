@@ -75,6 +75,14 @@ def restart_app():
         run("dtach -n `mktemp -u /tmp/dtach.XXXX` python -m cloud_sync_app.cloud_sync ./cloud_sync.yml", pty=False)
     print(red("Restart Cloud Sync Service Succeed!"))
 
+def reload_supervisor():
+    """ Reload supervisor as monitor service """
+    if not exists("/usr/bin/supervisord"):
+        sudo("apt-get install supervisor")
+    put('bin/supervisor.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
+    sudo('supervisorctl reload')
+    print(red("Reload Supervisor Service Succeed!"))
+
 def clean():
     """Clean packages on server."""
     dist = local('python setup.py --fullname', capture=True).strip()

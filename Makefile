@@ -22,7 +22,7 @@ verify:
 	@./venv/bin/python -m cloud_sync_app.verify
 
 deploy:
-	@fab tarball upload_dist install_venv install_app restart_app clean
+	@fab tarball upload_dist install_venv install_app reload_supervisor clean
 
 clean-pyc:
 	@find . -name '*.pyc' -exec rm -f {} +
