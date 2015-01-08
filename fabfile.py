@@ -63,6 +63,7 @@ def install_app():
     with cd('~/tmp/%s' % dist):
         run('cp -f ~/tmp/%s/Makefile %s' % (dist, CLOUD_SYNC_HOME))
         run('cp -f ~/tmp/%s/cloud_sync.yml %s' % (dist, CLOUD_SYNC_HOME))
+        sudo('cp -f ~/tmp/%s/bin/supervisor.conf /etc/supervisor/supervisord.conf' % dist)
         run('rm -f %s/*.pyc' % CLOUD_SYNC_HOME)
         run('%s/venv/bin/python setup.py install' % CLOUD_SYNC_HOME)
     print(red("Auto install cloud sync service succeed!"))
@@ -79,7 +80,6 @@ def reload_supervisor():
     """ Reload supervisor as monitor service """
     if not exists("/usr/bin/supervisord"):
         sudo("apt-get install supervisor")
-    put('bin/supervisor.conf', '/etc/supervisor/supervisord.conf', use_sudo=True)
     sudo('supervisorctl reload')
     print(red("Reload Supervisor Service Succeed!"))
 
